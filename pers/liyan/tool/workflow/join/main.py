@@ -70,23 +70,22 @@ def main():
         with_brackets = '(' + ',\n'.join(txt_list) + ')'
         add_wf_item(wf, title=with_brackets, subtitle='with_brackets', copytext=with_brackets)
         # 去掉换行符
-        one_line = ','.join(txt_list)
+        one_line = ', '.join(txt_list)
         add_wf_item(wf, title=one_line, subtitle='one_line', copytext=one_line)
         # 去掉换行增加括号
-        one_line_with_brackets = '(' + ','.join(txt_list) + ')'
+        one_line_with_brackets = '(' + ', '.join(txt_list) + ')'
         add_wf_item(wf, title=one_line_with_brackets, subtitle='one_line_with_brackets',
                     copytext=one_line_with_brackets)
-
         # 去重
         txt_set = set(txt_list)
         # 增加括号
         with_brackets = '(' + ',\n'.join(txt_set) + ')'
         add_wf_item(wf, title=with_brackets, subtitle='distinct_with_brackets', copytext=with_brackets)
         # 去掉换行符
-        one_line = ','.join(txt_set)
+        one_line = ', '.join(txt_set)
         add_wf_item(wf, title=one_line, subtitle='distinct_one_line', copytext=one_line)
         # 去掉换行增加括号
-        one_line_with_brackets = '(' + ','.join(txt_set) + ')'
+        one_line_with_brackets = '(' + ', '.join(txt_set) + ')'
         add_wf_item(wf, title=one_line_with_brackets, subtitle='distinct_one_line_with_brackets',
                     copytext=one_line_with_brackets)
 
