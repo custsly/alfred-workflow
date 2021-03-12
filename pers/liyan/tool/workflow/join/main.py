@@ -17,13 +17,15 @@ def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
     wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
 
 
-def wrapper_with_quote(txt):
+def wrapper_with_symbol(txt_list, symbol="'"):
     """
-    使用单引号包装
-    :param txt: 文本内容
+    使用符号包装
+    :param symbol: 包装的符号
+    :param txt_list: 文本内容list
     :return: 返回
     """
-    return "'" + txt + "'"
+
+    return map(lambda txt: symbol + txt + symbol, txt_list)
 
 
 def remove_blank(content):
@@ -43,8 +45,8 @@ def main():
     join参数
     :return:
     """
-    # 参数类型
-    param_type = sys.argv[1]
+    # 参数
+    param = sys.argv[1]
     valid = True
 
     # 读取剪贴板内容
@@ -52,18 +54,20 @@ def main():
     txt = remove_blank(txt)
     txt_list = txt.split('\n')
 
+    # 结果
+    result_list = []
+
     # workflow
     wf = Workflow3()
 
-    if param_type == '1':
+    if param == '1':
         # 字符串, 追加单引号
-        txt_list = map(wrapper_with_quote, txt_list)
-    elif param_type == '2':
+        txt_list = wrapper_with_symbol(txt_list)
+    elif param == '2':
         # 不需要添加引号
         pass
     else:
-        add_wf_item(wf, title='unknown param %s' % param_type, valid=False)
-        valid = False
+        txt_list = wrapper_with_symbol(txt_list, param)
 
     if valid:
         # 增加括号
