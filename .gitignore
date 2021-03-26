@@ -1,0 +1,6 @@
+/notebook/.ipynb_checkpoints/
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
