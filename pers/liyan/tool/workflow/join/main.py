@@ -44,7 +44,7 @@ def remove_blank(content):
 
 def main():
     """
-    join参数
+    读取剪贴板, 移除空白行, 使用给定的参数进行 join
     :return:
     """
     # 参数
