@@ -23,6 +23,8 @@ def remove_blank(content):
     :param content: 字符串
     :return: 移除后的内容
     """
+    if content is None:
+        return ''
     return content.replace('\t', '') \
         .replace(' ', '') \
         .replace('\r', '') \
