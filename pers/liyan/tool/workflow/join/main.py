@@ -113,7 +113,6 @@ def main():
         add_wf_item(wf, title=one_line_with_brackets_no_space_distinct, subtitle='one_line_with_brackets_no_space_distinct',
                     copytext=one_line_with_brackets_no_space_distinct)
 
-
     wf.send_feedback()
     # print(txt)
     # pyperclip.copy(txt)
