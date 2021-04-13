@@ -1,34 +1,10 @@
 # -*- coding: UTF-8 -*-
 import sys
+
+sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
 import pyperclip
 from workflow import Workflow3
-
-
-def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
-    """
-    workflow 增加 item
-    :param wf: workflow
-    :param title: title
-    :param subtitle: subtitle
-    :param copytext: copytext
-    :param valid: valid
-    :return:
-    """
-    wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
-
-
-def remove_blank(content):
-    """
-    移除空白, /t 空格
-    :param content: 字符串
-    :return: 移除后的内容
-    """
-    if content is None:
-        return ''
-    return content.replace('\t', '') \
-        .replace(' ', '') \
-        .replace('\r', '') \
-        .strip()
+from wf_utils import workflow_util
 
 
 def main():
@@ -44,7 +20,7 @@ def main():
     # 读取剪贴板内容
     txt = pyperclip.paste()
     # 移除空白字符
-    txt = remove_blank(txt)
+    txt = workflow_util.remove_blank_exclude_newline(txt)
     txt_list = txt.split('\n')
     # 使用字符包装
     txt_list = map(lambda x: wrapper + x + wrapper, txt_list)
@@ -55,7 +31,7 @@ def main():
     # result
     result = '\n'.join(txt_list)
 
-    add_wf_item(wf, title=result, subtitle="wrapper with " + wrapper, copytext=result)
+    workflow_util.add_wf_item(wf, title=result, subtitle="wrapper with " + wrapper, copytext=result)
 
     wf.send_feedback()
 

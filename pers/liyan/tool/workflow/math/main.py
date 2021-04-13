@@ -1,20 +1,10 @@
 # -*- coding: UTF-8 -*-
 import sys
+
+sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
 import pyperclip
 from workflow import Workflow3
-
-
-def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
-    """
-    workflow 增加 item
-    :param wf: workflow
-    :param title: title
-    :param subtitle: subtitle
-    :param copytext: copytext
-    :param valid: valid
-    :return:
-    """
-    wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
+from wf_utils import workflow_util
 
 
 def remove_blank(content):
@@ -49,7 +39,6 @@ def main():
         # 使用字符包装
         number_list = map(int, txt_list)
 
-        result = None
         # 计算
         if operation == 'sum':
             result = sum(number_list)
@@ -60,7 +49,7 @@ def main():
     except Exception as e:
         result = "error " + str(e.args)
 
-    add_wf_item(wf, title=result, subtitle="operation result", copytext=result)
+    workflow_util.add_wf_item(wf, title=result, subtitle="operation result", copytext=result)
 
     wf.send_feedback()
 

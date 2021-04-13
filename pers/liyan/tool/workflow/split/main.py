@@ -1,57 +1,10 @@
 # -*- coding: UTF-8 -*-
 import sys
+
+sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
 import pyperclip
 from workflow import Workflow3
-
-
-def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
-    """
-    workflow 增加 item
-    :param wf: workflow
-    :param title: title
-    :param subtitle: subtitle
-    :param copytext: copytext
-    :param valid: valid
-    :return:
-    """
-    wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
-
-
-def remove_blank(content):
-    """
-    移除空白, \t 空格, \n
-    :param content: 字符串
-    :return: 移除后的内容
-    """
-    if content is None:
-        return ''
-    return content.replace('\t', '') \
-        .replace(' ', '') \
-        .replace('\r', '') \
-        .replace('\n', '') \
-        .strip()
-
-
-def un_wrap_brackets(text):
-    """
-    移除两端的括号
-    :param text:
-    :return:
-    """
-    if text is None:
-        return ''
-    return text.strip('(').strip(')')
-
-
-def un_wrap_quote(text):
-    """
-    移除两端的单引号
-    :param text:
-    :return:
-    """
-    if text is None:
-        return ''
-    return text.strip("'")
+from wf_utils import workflow_util
 
 
 def main():
@@ -67,9 +20,9 @@ def main():
     # 读取剪贴板内容
     txt = pyperclip.paste()
     # 移除空白字符
-    txt = remove_blank(txt)
+    txt = workflow_util.remove_blank(txt)
     # 移除两端的括号
-    txt = un_wrap_brackets(txt)
+    txt = workflow_util.un_wrap_brackets(txt)
 
     txt_list = txt.split(splitter)
 
@@ -79,13 +32,13 @@ def main():
     split_result = '\n'.join(txt_list)
 
     # split 得到的结果
-    add_wf_item(wf, title=split_result, subtitle="splitter with " + splitter, copytext=split_result)
+    workflow_util.add_wf_item(wf, title=split_result, subtitle="splitter with " + splitter, copytext=split_result)
 
     # 移除两端的单引号
-    split_unwrap_list = map(un_wrap_quote, txt_list)
+    split_unwrap_list = map(workflow_util.un_wrap_quote, txt_list)
     split_unwrap_result = '\n'.join(split_unwrap_list)
-    add_wf_item(wf, title=split_unwrap_result, subtitle="splitter with %s, unwrap quote" % splitter,
-                copytext=split_unwrap_result)
+    workflow_util.add_wf_item(wf, title=split_unwrap_result, subtitle="splitter with %s, unwrap quote" % splitter,
+                              copytext=split_unwrap_result)
 
     wf.send_feedback()
 

@@ -1,19 +1,10 @@
 # -*- coding: UTF-8 -*-
+import sys
+
+sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
 import pyperclip
 from workflow import Workflow3
-
-
-def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
-    """
-    workflow 增加 item
-    :param wf: workflow
-    :param title: title
-    :param subtitle: subtitle
-    :param copytext: copytext
-    :param valid: valid
-    :return:
-    """
-    wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
+from wf_utils import workflow_util
 
 
 def remove_return(content):
@@ -40,7 +31,7 @@ def main():
     # workflow
     wf = Workflow3()
 
-    add_wf_item(wf, title=repr(txt), subtitle=r'replace \r\n with \n', copytext=txt, valid=True)
+    workflow_util.add_wf_item(wf, title=repr(txt), subtitle=r'replace \r\n with \n', copytext=txt, valid=True)
 
     wf.send_feedback()
 
