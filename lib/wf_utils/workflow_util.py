@@ -43,6 +43,17 @@ def remove_blank(content):
         .strip()
 
 
+def wrap_with_symbol(txt_list, symbol="'"):
+    """
+    使用符号包装
+    :param symbol: 包装的符号
+    :param txt_list: 文本内容list
+    :return: 返回
+    """
+
+    return map(lambda txt: symbol + txt + symbol, txt_list)
+
+
 def un_wrap_brackets(text):
     """
     移除两端的括号
@@ -63,3 +74,13 @@ def un_wrap_quote(text):
     if text is None:
         return ''
     return text.strip("'")
+
+
+def remove_blank_element(text_list):
+    """
+    删除集合中的空字符串
+    :param text_list: 字符串 list
+    :return: list
+    """
+
+    return [text for text in text_list if text.strip()]
