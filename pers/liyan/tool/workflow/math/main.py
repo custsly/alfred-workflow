@@ -37,7 +37,7 @@ def main():
 
     try:
         # 使用字符包装
-        number_list = map(int, txt_list)
+        number_list = list(map(int, txt_list))
 
         # 计算
         if operation == 'sum':
