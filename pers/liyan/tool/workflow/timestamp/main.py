@@ -74,6 +74,21 @@ def duration_of_hour(datetime):
         start_of_hour) * 1000 + 3600000 - 1
 
 
+def duration_of_minute(datetime):
+    """
+    当前分钟的开始结束时间戳, ms
+    :param datetime: 时间
+    :return:  开始时间, 开始时间戳, 结束时间, 结束时间戳
+    """
+    minute_str = time.strftime("%Y-%m-%d %H:%M", datetime)
+    start_of_minute_str = minute_str + ':00'
+    end_of_minute_str = minute_str + ':59'
+    start_of_minute = time.strptime(start_of_minute_str, DATE_TIME_FORMAT)
+
+    return start_of_minute_str, parse_timestamp_s(start_of_minute) * 1000, end_of_minute_str, parse_timestamp_s(
+        start_of_minute) * 1000 + 60000 - 1
+
+
 def duration_of_day(datetime):
     """
     当前日期开始的时间戳, ms 值 000, 999
@@ -219,6 +234,13 @@ def main():
                                       subtitle='start of hour(ms), "%s"' % start_of_hour, copytext=hour_start_ms)
             workflow_util.add_wf_item(wf, title=hour_end_ms,
                                       subtitle='end of hour(ms), "%s"' % end_of_hour, copytext=hour_end_ms)
+
+            # 分钟的起止时间 ms
+            start_of_minute, minute_start_ms, end_of_minute, minute_end_ms = duration_of_minute(date_time)
+            workflow_util.add_wf_item(wf, title=minute_start_ms,
+                                      subtitle='start of minute(ms), "%s"' % start_of_minute, copytext=minute_start_ms)
+            workflow_util.add_wf_item(wf, title=minute_end_ms,
+                                      subtitle='end of minute(ms), "%s"' % end_of_minute, copytext=minute_end_ms)
 
             # 秒级时间戳
             workflow_util.add_wf_item(wf, title=timestamp_s,
