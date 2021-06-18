@@ -214,12 +214,12 @@ def main():
             # ms 时间戳 ms 值 000
             workflow_util.add_wf_item(wf, title=timestamp_s * 1000,
                                       subtitle='ms timestamp start of second from "%s"' % date_time_str,
-                                      copytext=timestamp_s)
+                                      copytext=timestamp_s * 1000)
 
             # ms 时间戳 ms 值 999
             workflow_util.add_wf_item(wf, title=timestamp_s * 1000 + 999,
                                       subtitle='ms timestamp end of second from "%s"' % date_time_str,
-                                      copytext=timestamp_s)
+                                      copytext=timestamp_s * 1000 + 999)
 
             # 当天起止时间 ms
             start_of_day, day_start_ms, end_of_day, day_end_ms = duration_of_day(date_time)
