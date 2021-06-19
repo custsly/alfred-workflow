@@ -10,6 +10,9 @@ from wf_utils import workflow_util
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+# 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳
+OPERATION_TUP = ('0', '1', '2')
+
 
 def format_time(datetime):
     """
@@ -138,21 +141,63 @@ def parse_datetime_with_timestamp_ms(timestamp):
     return time.localtime(timestamp)
 
 
+def analysis_operation(txt_content):
+    """
+    根据文本内容预测操作类型
+    :param txt_content: 文本内容
+    :return: 0, 1, 2
+    """
+    # 空值, 类型 0
+    if not txt_content:
+        return '0'
+
+    # 包含非数字字符
+    if re.search(r'\D', txt_content) is not None:
+        return '2'
+
+    # 纯数字字符, 长度超过 14 位无意义
+    if len(txt_content) <= 14:
+        return '1'
+
+    return '0'
+
+
+def analysis_operation_and_data():
+    """
+    分析得到操作类型和数据内容
+    :return: 操作类型, 时间数据
+    """
+
+    # 取命令行参数
+    arg = None
+    if len(sys.argv) > 1 and sys.argv[1]:
+        arg = sys.argv[1]
+
+    # 没有传参数
+    if arg is None:
+        # 读取剪贴板
+        clip_content = workflow_util.remove_blank(pyperclip.paste())
+        return analysis_operation(clip_content), clip_content
+
+    # 不需要读取剪贴板的情况
+    if arg not in OPERATION_TUP:
+        arg = workflow_util.remove_blank(arg)
+        return analysis_operation(arg), arg
+    else:
+        # 读取剪贴板
+        clip_content = workflow_util.remove_blank(pyperclip.paste())
+        return arg, clip_content
+
+
 def main():
     """
-    读取剪贴板, split 参数
+    读取剪贴板, 或者从命令行获取参数
+    命令行可以指定操作类型(0, 1, 2), 此时时间数据从剪贴板获取
+    命令行不指定操作类型时时间数据优先从命令行获取, 命令行为空则使用剪贴板数据
     :return:
     """
-    # 默认操作类型是是时间戳转为时间类型
-    operation = '0'
-    if len(sys.argv) > 1 and sys.argv[1]:
-        operation = sys.argv[1]
 
-    # 读取剪贴板内容, 默认操作不需要读取
-    clip_content = pyperclip.paste() if operation != '0' else ''
-
-    # 移除空白字符
-    clip_content = workflow_util.remove_blank(clip_content)
+    operation, txt_content = analysis_operation_and_data()
 
     # workflow
     wf = Workflow3()
@@ -182,28 +227,28 @@ def main():
 
     elif operation == '1':
         # ms 时间戳转换为时间
-        time_from_ms = parse_datetime_with_timestamp_ms(clip_content)
-        time_str_from_ms = format_time(time_from_ms) if time_from_ms else 'Invalid ms timestamp "%s"' % clip_content
+        time_from_ms = parse_datetime_with_timestamp_ms(txt_content)
+        time_str_from_ms = format_time(time_from_ms) if time_from_ms else 'Invalid ms timestamp "%s"' % txt_content
 
         # s 时间戳转换为时间
-        time_from_s = parse_datetime_with_timestamp_s(clip_content)
-        time_str_from_s = format_time(time_from_s) if time_from_s else 'Invalid second timestamp "%s"' % clip_content
+        time_from_s = parse_datetime_with_timestamp_s(txt_content)
+        time_str_from_s = format_time(time_from_s) if time_from_s else 'Invalid second timestamp "%s"' % txt_content
 
         workflow_util.add_wf_item(wf, title=time_str_from_ms,
-                                  subtitle=('time parse from ms timestamp "%s"' % clip_content) if time_from_ms else '',
+                                  subtitle=('time parse from ms timestamp "%s"' % txt_content) if time_from_ms else '',
                                   copytext=time_str_from_ms,
                                   valid=(time_from_ms is not None))
 
         workflow_util.add_wf_item(wf, title=time_str_from_s,
-                                  subtitle='time parse from second timestamp "%s"' % clip_content if time_from_s else '',
+                                  subtitle='time parse from second timestamp "%s"' % txt_content if time_from_s else '',
                                   copytext=time_str_from_s,
                                   valid=(time_from_s is not None))
     elif operation == '2':
         # 时间转换为标准格式
-        date_time = parse_time(clip_content)
+        date_time = parse_time(txt_content)
 
         if not date_time:
-            workflow_util.add_wf_item(wf, title='Invalid datetime str "%s"' % clip_content,
+            workflow_util.add_wf_item(wf, title='Invalid datetime str "%s"' % txt_content,
                                       subtitle='',
                                       copytext=None,
                                       valid=False)
