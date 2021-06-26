@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
 import sys
 
-sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
 import pyperclip
-from workflow import Workflow3
+
 from wf_utils import workflow_util
+from workflow import Workflow3
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     :return:
     """
     # 参数
-    param = sys.argv[1]
+    param = sys.argv[1] if len(sys.argv) > 1 else '2'
 
     # 读取剪贴板内容
     txt = pyperclip.paste()

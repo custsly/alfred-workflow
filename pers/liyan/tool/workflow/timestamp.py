@@ -1,13 +1,14 @@
 # -*- coding: UTF-8 -*-
-import sys
-
-sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
-import time
 import re
-import pyperclip
-from workflow import Workflow3
-from wf_utils import workflow_util
+import sys
+import time
 
+import pyperclip
+
+from wf_utils import workflow_util
+from workflow import Workflow3
+
+# 日期格式
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳

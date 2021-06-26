@@ -1,15 +1,15 @@
 # -*- coding: UTF-8 -*-
 import sys
 
-sys.path.append(r'/Users/shiliyan/Workspace/python/tools/lib')
 import pyperclip
-from workflow import Workflow3
+
 from wf_utils import workflow_util
+from workflow import Workflow3
 
 
 def main():
     """
-    join参数
+    包装字符串
     :return:
     """
     # 包装的字符串
