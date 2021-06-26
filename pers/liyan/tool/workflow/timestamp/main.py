@@ -151,9 +151,15 @@ def analysis_operation(txt_content):
     if not txt_content:
         return '0'
 
-    # 包含非数字字符
+    # 不存在数字, 无意义
+    if re.search(r'\d', txt_content) is None:
+        return '0'
+
+    # 包含非数字字符, 并且替换掉非数字之后长度 >= 8
     if re.search(r'\D', txt_content) is not None:
-        return '2'
+        if len(re.sub(r'\D', '', txt_content)) >= 8:
+            return '2'
+        return '0'
 
     # 纯数字字符, 长度超过 14 位无意义
     if len(txt_content) <= 14:
@@ -213,17 +219,21 @@ def main():
         current_second_1 = time.strftime("%Y-%m-%d %H:%M:%S", now)
         current_second_2 = time.strftime("%Y%m%d%H%M%S", now)
 
-        workflow_util.add_wf_item(wf, title=date_str_1, subtitle='current date', copytext=date_str_1, valid=True)
+        workflow_util.add_wf_item(wf, title=date_str_1, subtitle='current date [yyyy-MM-dd]', copytext=date_str_1,
+                                  valid=True)
 
-        workflow_util.add_wf_item(wf, title=current_second_1, subtitle='current second', copytext=current_second_1)
+        workflow_util.add_wf_item(wf, title=current_second_1, subtitle='current second [yyyy-MM-dd HH:mm:ss]',
+                                  copytext=current_second_1)
 
-        workflow_util.add_wf_item(wf, title=date_str_2, subtitle='current date', copytext=date_str_2, valid=True)
+        workflow_util.add_wf_item(wf, title=date_str_2, subtitle='current date [yyyyMMdd]', copytext=date_str_2,
+                                  valid=True)
 
-        workflow_util.add_wf_item(wf, title=current_second_2, subtitle='current second', copytext=current_second_2)
-
-        workflow_util.add_wf_item(wf, title=timestamp_s, subtitle='current second timestamp', copytext=timestamp_s)
+        workflow_util.add_wf_item(wf, title=current_second_2, subtitle='current second [yyyyMMddHHmmss]',
+                                  copytext=current_second_2)
 
         workflow_util.add_wf_item(wf, title=timestamp_ms, subtitle='current ms timestamp', copytext=timestamp_ms)
+
+        workflow_util.add_wf_item(wf, title=timestamp_s, subtitle='current second timestamp', copytext=timestamp_s)
 
     elif operation == '1':
         # ms 时间戳转换为时间
@@ -258,12 +268,12 @@ def main():
 
             # ms 时间戳 ms 值 000
             workflow_util.add_wf_item(wf, title=timestamp_s * 1000,
-                                      subtitle='ms timestamp start of second from "%s"' % date_time_str,
+                                      subtitle='ms timestamp start of second, "%s"' % date_time_str,
                                       copytext=timestamp_s * 1000)
 
             # ms 时间戳 ms 值 999
             workflow_util.add_wf_item(wf, title=timestamp_s * 1000 + 999,
-                                      subtitle='ms timestamp end of second from "%s"' % date_time_str,
+                                      subtitle='ms timestamp end of second, "%s"' % date_time_str,
                                       copytext=timestamp_s * 1000 + 999)
 
             # 当天起止时间 ms
@@ -289,7 +299,7 @@ def main():
 
             # 秒级时间戳
             workflow_util.add_wf_item(wf, title=timestamp_s,
-                                      subtitle='second timestamp from "%s"' % date_time_str,
+                                      subtitle='second timestamp, "%s"' % date_time_str,
                                       copytext=timestamp_s)
 
     wf.send_feedback()
