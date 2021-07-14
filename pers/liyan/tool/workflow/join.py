@@ -70,11 +70,11 @@ def main():
 
     # 去重, joiner 不加空格
     # 去掉换行符
-    one_line_no_space_distinct = ','.join(txt_list)
+    one_line_no_space_distinct = ','.join(txt_set)
     workflow_util.add_wf_item(wf, title=one_line_no_space_distinct, subtitle='one_line_no_space_distinct',
                               copytext=one_line_no_space_distinct)
     # 去掉换行增加括号
-    one_line_with_brackets_no_space_distinct = '(' + ','.join(txt_list) + ')'
+    one_line_with_brackets_no_space_distinct = '(' + ','.join(txt_set) + ')'
     workflow_util.add_wf_item(wf, title=one_line_with_brackets_no_space_distinct,
                               subtitle='one_line_with_brackets_no_space_distinct',
                               copytext=one_line_with_brackets_no_space_distinct)
