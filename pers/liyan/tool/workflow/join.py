@@ -56,6 +56,11 @@ def main():
     txt_set = list(set(txt_list))
     txt_set.sort(key=txt_list.index)
 
+    # 只进行去重, 换行, 不增加其他分隔符
+    distinct_with_line = '\n'.join(txt_set)
+    workflow_util.add_wf_item(wf, title=distinct_with_line, subtitle='distinct_with_line',
+                              copytext=distinct_with_line)
+
     # 增加括号
     with_brackets_distinct = '(' + ',\n'.join(txt_set) + ')'
     workflow_util.add_wf_item(wf, title=with_brackets_distinct, subtitle='distinct_with_brackets',
