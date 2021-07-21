@@ -108,6 +108,24 @@ def duration_of_day(datetime):
         start_of_day) * 1000 + 86400000 - 1
 
 
+def add_duration_to_workflow(func, datetime, workflow, duration_name):
+    """
+    在 workflow 增加一个区间的开始时间戳和结束时间戳
+    :param func: 返回区间函数的 function, 需要4个返回值, 区间开始时间(文本格式), 开始时间戳(ms), 结束时间(文本), 结束时间戳(ms)
+    :param datetime: datetime
+    :param workflow: workflow 对象
+    :param duration_name: 区间名称 day/hour/minute
+    :return:
+    """
+    start_of_duration, duration_start_ms, end_of_duration, duration_end_ms = func(datetime)
+    workflow_util.add_wf_item(workflow, title='start of %s(ms), "%s"' % (duration_name, start_of_duration),
+                              subtitle=duration_start_ms,
+                              copytext=duration_start_ms)
+    workflow_util.add_wf_item(workflow, title='end of %s(ms), "%s"' % (duration_name, end_of_duration),
+                              subtitle=duration_end_ms,
+                              copytext=duration_end_ms)
+
+
 def parse_datetime_with_timestamp_s(timestamp):
     """
     字符串格式的时间戳转换为时间类型 秒级时间戳
@@ -220,21 +238,33 @@ def main():
         current_second_1 = time.strftime("%Y-%m-%d %H:%M:%S", now)
         current_second_2 = time.strftime("%Y%m%d%H%M%S", now)
 
-        workflow_util.add_wf_item(wf, title=date_str_1, subtitle='current date [yyyy-MM-dd]', copytext=date_str_1,
+        # yyyy-MM-dd 格式
+        workflow_util.add_wf_item(wf, title='current date [yyyy-MM-dd]', subtitle=date_str_1, copytext=date_str_1,
                                   valid=True)
-
-        workflow_util.add_wf_item(wf, title=current_second_1, subtitle='current second [yyyy-MM-dd HH:mm:ss]',
+        # yyyy-MM-dd HH:mm:ss 格式
+        workflow_util.add_wf_item(wf, title='current second [yyyy-MM-dd HH:mm:ss]', subtitle=current_second_1,
                                   copytext=current_second_1)
 
-        workflow_util.add_wf_item(wf, title=date_str_2, subtitle='current date [yyyyMMdd]', copytext=date_str_2,
+        # 当天起止时间 ms
+        add_duration_to_workflow(duration_of_day, now, wf, "day")
+
+        # 小时的起止时间 ms
+        add_duration_to_workflow(duration_of_hour, now, wf, "hour")
+
+        # 分钟的起止时间 ms
+        add_duration_to_workflow(duration_of_minute, now, wf, "minute")
+
+        # yyyyMMdd 格式
+        workflow_util.add_wf_item(wf, title='current date [yyyyMMdd]', subtitle=date_str_2, copytext=date_str_2,
                                   valid=True)
 
-        workflow_util.add_wf_item(wf, title=current_second_2, subtitle='current second [yyyyMMddHHmmss]',
+        # yyyyMMddHHmmss 格式
+        workflow_util.add_wf_item(wf, title='current second [yyyyMMddHHmmss]', subtitle=current_second_2,
                                   copytext=current_second_2)
 
-        workflow_util.add_wf_item(wf, title=timestamp_ms, subtitle='current ms timestamp', copytext=timestamp_ms)
+        workflow_util.add_wf_item(wf, title='current ms timestamp', subtitle=timestamp_ms, copytext=timestamp_ms)
 
-        workflow_util.add_wf_item(wf, title=timestamp_s, subtitle='current second timestamp', copytext=timestamp_s)
+        workflow_util.add_wf_item(wf, title='current second timestamp', subtitle=timestamp_s, copytext=timestamp_s)
 
     elif operation == '1':
         # ms 时间戳转换为时间
@@ -268,39 +298,27 @@ def main():
             date_time_str = format_time(date_time)
 
             # ms 时间戳 ms 值 000
-            workflow_util.add_wf_item(wf, title=timestamp_s * 1000,
-                                      subtitle='ms timestamp start of second, "%s"' % date_time_str,
+            workflow_util.add_wf_item(wf, title='ms timestamp start of second, "%s"' % date_time_str,
+                                      subtitle=timestamp_s * 1000,
                                       copytext=timestamp_s * 1000)
 
             # ms 时间戳 ms 值 999
-            workflow_util.add_wf_item(wf, title=timestamp_s * 1000 + 999,
-                                      subtitle='ms timestamp end of second, "%s"' % date_time_str,
+            workflow_util.add_wf_item(wf, title='ms timestamp end of second, "%s"' % date_time_str,
+                                      subtitle=timestamp_s * 1000 + 999,
                                       copytext=timestamp_s * 1000 + 999)
 
             # 当天起止时间 ms
-            start_of_day, day_start_ms, end_of_day, day_end_ms = duration_of_day(date_time)
-            workflow_util.add_wf_item(wf, title=day_start_ms,
-                                      subtitle='start of day(ms), "%s"' % start_of_day, copytext=day_start_ms)
-            workflow_util.add_wf_item(wf, title=day_end_ms,
-                                      subtitle='end of day(ms), "%s"' % end_of_day, copytext=day_end_ms)
+            add_duration_to_workflow(duration_of_day, date_time, wf, "day")
 
             # 小时的起止时间 ms
-            start_of_hour, hour_start_ms, end_of_hour, hour_end_ms = duration_of_hour(date_time)
-            workflow_util.add_wf_item(wf, title=hour_start_ms,
-                                      subtitle='start of hour(ms), "%s"' % start_of_hour, copytext=hour_start_ms)
-            workflow_util.add_wf_item(wf, title=hour_end_ms,
-                                      subtitle='end of hour(ms), "%s"' % end_of_hour, copytext=hour_end_ms)
+            add_duration_to_workflow(duration_of_hour, date_time, wf, "hour")
 
             # 分钟的起止时间 ms
-            start_of_minute, minute_start_ms, end_of_minute, minute_end_ms = duration_of_minute(date_time)
-            workflow_util.add_wf_item(wf, title=minute_start_ms,
-                                      subtitle='start of minute(ms), "%s"' % start_of_minute, copytext=minute_start_ms)
-            workflow_util.add_wf_item(wf, title=minute_end_ms,
-                                      subtitle='end of minute(ms), "%s"' % end_of_minute, copytext=minute_end_ms)
+            add_duration_to_workflow(duration_of_minute, date_time, wf, "minute")
 
             # 秒级时间戳
-            workflow_util.add_wf_item(wf, title=timestamp_s,
-                                      subtitle='second timestamp, "%s"' % date_time_str,
+            workflow_util.add_wf_item(wf, title='second timestamp, "%s"' % date_time_str,
+                                      subtitle=timestamp_s,
                                       copytext=timestamp_s)
 
     wf.send_feedback()
