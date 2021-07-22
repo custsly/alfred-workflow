@@ -11,8 +11,8 @@ from workflow import Workflow3
 # 日期格式
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-# 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳
-OPERATION_TUP = ('0', '1', '2')
+# 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳, 3 多个时间戳批量转换
+OPERATION_TUP = ('0', '1', '2', '3')
 
 
 def format_time(datetime):
@@ -49,7 +49,6 @@ def parse_time(datetime_str):
     try:
         return time.strptime(datetime_str, '%Y%m%d%H%M%S')
     except ValueError as e:
-        # print('strptime error str: %s, error: %s' % (datetime_str, e))
         return None
 
 
@@ -165,6 +164,16 @@ def parse_datetime_with_timestamp_ms(timestamp):
     return time.localtime(timestamp)
 
 
+def parse_datetime_with_ts_ms_batch(timestamps_str):
+    """
+    分隔长字符串, 并作为 ms 时间戳转换为时间类型
+    :param timestamps_str: 使用逗号,空格,tab分隔的多个时间戳
+    :return: list
+    """
+    timestamp_list = re.sub(r'\D', ' ', timestamps_str).split(' ')
+    return list(map(parse_datetime_with_timestamp_ms, timestamp_list))
+
+
 def analysis_operation(txt_content):
     """
     根据文本内容预测操作类型
@@ -181,9 +190,14 @@ def analysis_operation(txt_content):
 
     # 包含非数字字符, 并且替换掉非数字之后长度 >= 8
     if re.search(r'\D', txt_content) is not None:
-        if len(re.sub(r'\D', '', txt_content)) >= 8:
+        # 非数字替换成空白字符, 长度 < 8 作为时间戳处理
+        if len(re.sub(r'\D', '', txt_content)) < 8:
             return '2'
-        return '0'
+        elif re.search(r'[^, \t\d]', txt_content) is None:
+            # 如果包含的非数字字符只有空格 tab 逗号
+            return '3'
+        else:
+            return '0'
 
     # 纯数字字符, 长度超过 14 位无意义
     if len(txt_content) <= 14:
@@ -206,16 +220,16 @@ def analysis_operation_and_data():
     # 没有传参数
     if arg is None:
         # 读取剪贴板
-        clip_content = workflow_util.remove_blank(pyperclip.paste())
+        clip_content = workflow_util.strip(pyperclip.paste())
         return analysis_operation(clip_content), clip_content
 
     # 不需要读取剪贴板的情况
     if arg not in OPERATION_TUP:
-        arg = workflow_util.remove_blank(arg)
+        arg = workflow_util.strip(arg)
         return analysis_operation(arg), arg
     else:
         # 读取剪贴板
-        clip_content = workflow_util.remove_blank(pyperclip.paste())
+        clip_content = workflow_util.strip(pyperclip.paste())
         return arg, clip_content
 
 
@@ -240,7 +254,7 @@ def main():
         date_str_1 = time.strftime("%Y-%m-%d", now)
         date_str_2 = time.strftime("%Y%m%d", now)
 
-        current_second_1 = time.strftime("%Y-%m-%d %H:%M:%S", now)
+        current_second_1 = time.strftime(DATE_TIME_FORMAT, now)
         current_second_2 = time.strftime("%Y%m%d%H%M%S", now)
 
         # yyyy-MM-dd 格式
@@ -333,6 +347,12 @@ def main():
             workflow_util.add_wf_item(wf, title='second timestamp, "%s"' % date_time_str,
                                       subtitle=timestamp_s,
                                       copytext=timestamp_s)
+    elif operation == '3':
+        date_time_list = parse_datetime_with_ts_ms_batch(txt_content)
+        date_time_sec_str = ', '.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
+        workflow_util.add_wf_item(wf, title='parse second datetime batch',
+                                  subtitle=date_time_sec_str,
+                                  copytext=date_time_sec_str)
 
     wf.send_feedback()
 

@@ -9,9 +9,9 @@ def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
     :param subtitle: subtitle
     :param copytext: copytext
     :param valid: valid
-    :return:
+    :return: add_item 方法的返回值
     """
-    wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
+    return wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
 
 
 def remove_blank_exclude_newline(content):
@@ -41,6 +41,17 @@ def remove_blank(content):
         .replace('\r', '') \
         .replace('\n', '') \
         .strip()
+
+
+def strip(content):
+    """
+    移除两侧空白字符
+    :param content: 字符串
+    :return: 移除后的内容
+    """
+    if content is None:
+        return ''
+    return content.strip()
 
 
 def wrap_with_symbol(txt_list, symbol="'"):
