@@ -190,12 +190,12 @@ def analysis_operation(txt_content):
 
     # 包含非数字字符, 并且替换掉非数字之后长度 >= 8
     if re.search(r'\D', txt_content) is not None:
-        # 非数字替换成空白字符, 长度 < 8 作为时间戳处理
-        if len(re.sub(r'\D', '', txt_content)) < 8:
-            return '2'
-        elif re.search(r'[^, \t\d]', txt_content) is None:
-            # 如果包含的非数字字符只有空格 tab 逗号
+        # 如果包含的非数字字符只有空格 tab 逗号
+        if re.search(r'[^, \t\d]', txt_content) is None:
             return '3'
+        elif len(re.sub(r'\D', '', txt_content)) >= 8:
+            # 非数字替换成空白字符, 长度 >= 8 作为时间戳处理
+            return '2'
         else:
             return '0'
 
