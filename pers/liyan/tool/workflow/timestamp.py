@@ -118,6 +118,11 @@ def add_duration_to_workflow(func, datetime, workflow, duration_name):
     :return:
     """
     start_of_duration, duration_start_ms, end_of_duration, duration_end_ms = func(datetime)
+    duration_total = '%s, %s' % (duration_start_ms, duration_end_ms)
+
+    workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration, end_of_duration),
+                              subtitle=duration_total,
+                              copytext=duration_total)
     workflow_util.add_wf_item(workflow, title='start of %s(ms), "%s"' % (duration_name, start_of_duration),
                               subtitle=duration_start_ms,
                               copytext=duration_start_ms)
@@ -279,6 +284,14 @@ def main():
                                   subtitle=('time parse from ms timestamp "%s"' % txt_content) if time_from_ms else '',
                                   copytext=time_str_from_ms,
                                   valid=(time_from_ms is not None))
+        # 当天起止时间 ms
+        add_duration_to_workflow(duration_of_day, time_from_ms, wf, "day")
+
+        # 小时的起止时间 ms
+        add_duration_to_workflow(duration_of_hour, time_from_ms, wf, "hour")
+
+        # 分钟的起止时间 ms
+        add_duration_to_workflow(duration_of_minute, time_from_ms, wf, "minute")
 
         workflow_util.add_wf_item(wf, title=time_str_from_s,
                                   subtitle='time parse from second timestamp "%s"' % txt_content if time_from_s else '',
