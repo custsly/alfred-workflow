@@ -1,17 +1,20 @@
 # -*- coding: UTF-8 -*-
 
 
-def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True):
+def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True, arg=None):
     """
     workflow 增加 item
     :param wf: workflow
     :param title: title
     :param subtitle: subtitle
-    :param copytext: copytext
+    :param copytext: copytext, 复制到剪贴板的内容
     :param valid: valid
+    :param arg 输出参数
     :return: add_item 方法的返回值
     """
-    return wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext)
+    if arg is None:
+        arg = copytext
+    return wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext, arg=arg)
 
 
 def remove_blank_exclude_newline(content):

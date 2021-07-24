@@ -23,9 +23,6 @@ def main():
     txt = pyperclip.paste()
     txt = remove_return(txt)
 
-    # 写入剪贴板
-    pyperclip.copy(txt)
-
     # workflow
     wf = Workflow3()
 
