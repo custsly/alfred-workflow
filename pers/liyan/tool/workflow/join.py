@@ -35,22 +35,23 @@ def main():
     # 增加括号
     with_brackets = '(' + ',\n'.join(txt_list) + ')'
     workflow_util.add_wf_item(wf, title=with_brackets, subtitle='with_brackets', arg=with_brackets)
+
     # 去掉换行符
     one_line = ', '.join(txt_list)
-    workflow_util.add_wf_item(wf, title=one_line, subtitle='one_line', arg=one_line)
+    one_line_item = workflow_util.add_wf_item(wf, title=one_line, subtitle='one_line', arg=one_line)
+    # 不加空格
+    one_line_no_space = ','.join(txt_list)
+    one_line_item.add_modifier('alt', subtitle='one_line_no_space', arg=one_line_no_space, valid=True)
+
     # 去掉换行增加括号
     one_line_with_brackets = '(' + ', '.join(txt_list) + ')'
-    workflow_util.add_wf_item(wf, title=one_line_with_brackets, subtitle='one_line_with_brackets',
-                              arg=one_line_with_brackets)
-
-    # joiner 不加空格
-    # 去掉换行符
-    one_line_no_space = ','.join(txt_list)
-    workflow_util.add_wf_item(wf, title=one_line_no_space, subtitle='one_line_no_space', arg=one_line_no_space)
-    # 去掉换行增加括号
+    one_line_with_brackets_item = workflow_util.add_wf_item(wf, title=one_line_with_brackets,
+                                                            subtitle='one_line_with_brackets',
+                                                            arg=one_line_with_brackets)
+    # 不加空格
     one_line_with_brackets_no_space = '(' + ','.join(txt_list) + ')'
-    workflow_util.add_wf_item(wf, title=one_line_with_brackets_no_space, subtitle='one_line_with_brackets_no_space',
-                              arg=one_line_with_brackets_no_space)
+    one_line_with_brackets_item.add_modifier('alt', subtitle='one_line_with_brackets_no_space',
+                                             arg=one_line_with_brackets_no_space, valid=True)
 
     # 去重, 保留原始顺序
     txt_set = list(set(txt_list))
@@ -67,22 +68,22 @@ def main():
                               arg=with_brackets_distinct)
     # 去掉换行符
     one_line_distinct = ', '.join(txt_set)
-    workflow_util.add_wf_item(wf, title=one_line_distinct, subtitle='distinct_one_line', arg=one_line_distinct)
+    one_line_distinct_item = workflow_util.add_wf_item(wf, title=one_line_distinct, subtitle='distinct_one_line',
+                                                       arg=one_line_distinct)
+    # 不加空格
+    one_line_distinct_no_space = ','.join(txt_set)
+    one_line_distinct_item.add_modifier('alt', subtitle='distinct_one_line_no_space',
+                                        arg=one_line_distinct_no_space, valid=True)
+
     # 去掉换行增加括号
     one_line_with_brackets_distinct = '(' + ', '.join(txt_set) + ')'
-    workflow_util.add_wf_item(wf, title=one_line_with_brackets_distinct, subtitle='distinct_one_line_with_brackets',
-                              arg=one_line_with_brackets_distinct)
-
-    # 去重, joiner 不加空格
-    # 去掉换行符
-    one_line_no_space_distinct = ','.join(txt_set)
-    workflow_util.add_wf_item(wf, title=one_line_no_space_distinct, subtitle='one_line_no_space_distinct',
-                              arg=one_line_no_space_distinct)
-    # 去掉换行增加括号
-    one_line_with_brackets_no_space_distinct = '(' + ','.join(txt_set) + ')'
-    workflow_util.add_wf_item(wf, title=one_line_with_brackets_no_space_distinct,
-                              subtitle='one_line_with_brackets_no_space_distinct',
-                              arg=one_line_with_brackets_no_space_distinct)
+    one_line_with_brackets_distinct_item = workflow_util.add_wf_item(wf, title=one_line_with_brackets_distinct,
+                                                                     subtitle='distinct_one_line_with_brackets',
+                                                                     arg=one_line_with_brackets_distinct)
+    # 不加空格
+    one_line_with_brackets_distinct_no_space = '(' + ','.join(txt_set) + ')'
+    one_line_with_brackets_distinct_item.add_modifier('alt', subtitle='distinct_one_line_with_brackets_no_space',
+                                                      arg=one_line_with_brackets_distinct_no_space, valid=True)
 
     wf.send_feedback()
 
