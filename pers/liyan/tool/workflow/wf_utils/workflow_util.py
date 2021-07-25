@@ -7,15 +7,15 @@ def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True, arg=None, i
     :param wf: workflow
     :param title: title
     :param subtitle: subtitle
-    :param copytext: copytext, 复制到剪贴板的内容
+    :param copytext: copytext, 复制到剪贴板的内容, 最好不要设置, 把输出参数设置到 arg 即可, 更灵活
     :param valid: valid
     :param arg 输出参数
     :param icon icon
     :param icontype icontype
     :return: add_item 方法的返回值
     """
-    if arg is None:
-        arg = copytext
+    if copytext is None:
+        copytext = arg
     return wf.add_item(title=title, subtitle=subtitle, valid=valid, copytext=copytext, arg=arg, icon=icon,
                        icontype=icontype)
 

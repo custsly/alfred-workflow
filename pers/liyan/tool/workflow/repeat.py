@@ -30,7 +30,7 @@ def main():
 
     # split 得到的结果
     workflow_util.add_wf_item(wf, title='repeated result', subtitle="%s * %s" % (repr(txt), count),
-                              copytext=repeat_result)
+                              arg=repeat_result)
 
     wf.send_feedback()
 

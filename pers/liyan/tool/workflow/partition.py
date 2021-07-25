@@ -64,11 +64,11 @@ def main():
     wf = Workflow3()
     workflow_util.add_wf_item(wf, title='split to %s partitions, one column' % len(partition_list),
                               subtitle='total count %s' % len(txt_list),
-                              copytext=one_column_result)
+                              arg=one_column_result)
 
     workflow_util.add_wf_item(wf, title='split to %s partitions, multi column' % len(partition_list),
                               subtitle='total count %s' % len(txt_list),
-                              copytext=multi_column_result)
+                              arg=multi_column_result)
 
     wf.send_feedback()
 

@@ -32,13 +32,13 @@ def main():
     split_result = '\n'.join(txt_list)
 
     # split 得到的结果
-    workflow_util.add_wf_item(wf, title=split_result, subtitle="splitter with " + splitter, copytext=split_result)
+    workflow_util.add_wf_item(wf, title=split_result, subtitle="splitter with " + splitter, arg=split_result)
 
     # 移除两端的单引号
     split_unwrap_list = map(workflow_util.un_wrap_quote, txt_list)
     split_unwrap_result = '\n'.join(split_unwrap_list)
     workflow_util.add_wf_item(wf, title=split_unwrap_result, subtitle="splitter with %s, unwrap quote" % splitter,
-                              copytext=split_unwrap_result)
+                              arg=split_unwrap_result)
 
     wf.send_feedback()
 

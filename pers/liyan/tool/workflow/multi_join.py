@@ -54,7 +54,7 @@ def main():
 
     # 按照原有excel行列格式处理
     excel_format = '\n'.join(map(lambda txt_list: '\t'.join(txt_list), sheet))
-    workflow_util.add_wf_item(wf, title=excel_format, subtitle='excel_format', copytext=excel_format)
+    workflow_util.add_wf_item(wf, title=excel_format, subtitle='excel_format', arg=excel_format)
 
     #
     # # 为了防止有特殊字符导致粘贴到 excel 中不能正确分列, 每一个单元格使用双引号处理

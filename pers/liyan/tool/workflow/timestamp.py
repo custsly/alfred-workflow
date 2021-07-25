@@ -121,13 +121,13 @@ def add_duration_to_workflow(func, datetime, workflow, duration_name):
 
     workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration, end_of_duration),
                               subtitle=duration_total,
-                              copytext=duration_total)
+                              arg=duration_total)
     workflow_util.add_wf_item(workflow, title='start of %s(ms), "%s"' % (duration_name, start_of_duration),
                               subtitle=duration_start_ms,
-                              copytext=duration_start_ms)
+                              arg=duration_start_ms)
     workflow_util.add_wf_item(workflow, title='end of %s(ms), "%s"' % (duration_name, end_of_duration),
                               subtitle=duration_end_ms,
-                              copytext=duration_end_ms)
+                              arg=duration_end_ms)
 
 
 def parse_datetime_with_timestamp_s(timestamp):
@@ -258,11 +258,12 @@ def main():
         current_second_2 = time.strftime("%Y%m%d%H%M%S", now)
 
         # yyyy-MM-dd 格式
-        workflow_util.add_wf_item(wf, title='current date [yyyy-MM-dd]', subtitle=date_str_1, copytext=date_str_1,
-                                  valid=True)
+        current_date_item = workflow_util.add_wf_item(wf, title='current date', subtitle='yyyy-MM-dd',
+                                                      arg=date_str_1,
+                                                      valid=True)
         # yyyy-MM-dd HH:mm:ss 格式
         workflow_util.add_wf_item(wf, title='current second [yyyy-MM-dd HH:mm:ss]', subtitle=current_second_1,
-                                  copytext=current_second_1)
+                                  arg=current_second_1)
 
         # 当天起止时间 ms
         add_duration_to_workflow(duration_of_day, now, wf, "day")
@@ -274,16 +275,16 @@ def main():
         add_duration_to_workflow(duration_of_minute, now, wf, "minute")
 
         # yyyyMMdd 格式
-        workflow_util.add_wf_item(wf, title='current date [yyyyMMdd]', subtitle=date_str_2, copytext=date_str_2,
+        workflow_util.add_wf_item(wf, title='current date [yyyyMMdd]', subtitle=date_str_2, arg=date_str_2,
                                   valid=True)
 
         # yyyyMMddHHmmss 格式
         workflow_util.add_wf_item(wf, title='current second [yyyyMMddHHmmss]', subtitle=current_second_2,
-                                  copytext=current_second_2)
+                                  arg=current_second_2)
 
-        workflow_util.add_wf_item(wf, title='current ms timestamp', subtitle=timestamp_ms, copytext=timestamp_ms)
+        workflow_util.add_wf_item(wf, title='current ms timestamp', subtitle=timestamp_ms, arg=timestamp_ms)
 
-        workflow_util.add_wf_item(wf, title='current second timestamp', subtitle=timestamp_s, copytext=timestamp_s)
+        workflow_util.add_wf_item(wf, title='current second timestamp', subtitle=timestamp_s, arg=timestamp_s)
 
     elif operation == '1':
         # ms 时间戳转换为时间
@@ -296,7 +297,7 @@ def main():
 
         workflow_util.add_wf_item(wf, title=time_str_from_ms,
                                   subtitle=('time parse from ms timestamp "%s"' % txt_content) if time_from_ms else '',
-                                  copytext=time_str_from_ms,
+                                  arg=time_str_from_ms,
                                   valid=(time_from_ms is not None))
         # 当天起止时间 ms
         add_duration_to_workflow(duration_of_day, time_from_ms, wf, "day")
@@ -309,7 +310,7 @@ def main():
 
         workflow_util.add_wf_item(wf, title=time_str_from_s,
                                   subtitle='time parse from second timestamp "%s"' % txt_content if time_from_s else '',
-                                  copytext=time_str_from_s,
+                                  arg=time_str_from_s,
                                   valid=(time_from_s is not None))
     elif operation == '2':
         # 时间转换为标准格式
@@ -318,7 +319,7 @@ def main():
         if not date_time:
             workflow_util.add_wf_item(wf, title='Invalid datetime str "%s"' % txt_content,
                                       subtitle='',
-                                      copytext=None,
+                                      arg=None,
                                       valid=False)
         else:
             timestamp_s = parse_timestamp_s(date_time)
@@ -327,12 +328,12 @@ def main():
             # ms 时间戳 ms 值 000
             workflow_util.add_wf_item(wf, title='ms timestamp start of second, "%s"' % date_time_str,
                                       subtitle=timestamp_s * 1000,
-                                      copytext=timestamp_s * 1000)
+                                      arg=timestamp_s * 1000)
 
             # ms 时间戳 ms 值 999
             workflow_util.add_wf_item(wf, title='ms timestamp end of second, "%s"' % date_time_str,
                                       subtitle=timestamp_s * 1000 + 999,
-                                      copytext=timestamp_s * 1000 + 999)
+                                      arg=timestamp_s * 1000 + 999)
 
             # 当天起止时间 ms
             add_duration_to_workflow(duration_of_day, date_time, wf, "day")
@@ -346,13 +347,13 @@ def main():
             # 秒级时间戳
             workflow_util.add_wf_item(wf, title='second timestamp, "%s"' % date_time_str,
                                       subtitle=timestamp_s,
-                                      copytext=timestamp_s)
+                                      arg=timestamp_s)
     elif operation == '3':
         date_time_list = parse_datetime_with_ts_ms_batch(txt_content)
         date_time_sec_str = ', '.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
         workflow_util.add_wf_item(wf, title='parse second datetime batch',
                                   subtitle=date_time_sec_str,
-                                  copytext=date_time_sec_str)
+                                  arg=date_time_sec_str)
 
     wf.send_feedback()
 

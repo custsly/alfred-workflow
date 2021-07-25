@@ -43,7 +43,7 @@ def main():
     values_sql = ',\n'.join(record_list)
     # workflow
     wf = Workflow3()
-    workflow_util.add_wf_item(wf, title="values SQL", subtitle="total count %s" % len(rows), copytext=values_sql)
+    workflow_util.add_wf_item(wf, title="values SQL", subtitle="total count %s" % len(rows), arg=values_sql)
     wf.send_feedback()
 
 

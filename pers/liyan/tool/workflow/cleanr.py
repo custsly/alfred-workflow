@@ -26,7 +26,7 @@ def main():
     # workflow
     wf = Workflow3()
 
-    workflow_util.add_wf_item(wf, title=repr(txt), subtitle=r'replace \r\n with \n', copytext=txt, valid=True)
+    workflow_util.add_wf_item(wf, title=repr(txt), subtitle=r'replace \r\n with \n', arg=txt, valid=True)
 
     wf.send_feedback()
 

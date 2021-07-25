@@ -51,7 +51,7 @@ def main():
 
     markdown_table = '\n'.join(md_row_list)
 
-    workflow_util.add_wf_item(wf, title=md_row_list[0], subtitle='Markdown Table', copytext=markdown_table)
+    workflow_util.add_wf_item(wf, title=md_row_list[0], subtitle='Markdown Table', arg=markdown_table)
 
     wf.send_feedback()
 

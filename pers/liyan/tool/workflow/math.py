@@ -49,7 +49,7 @@ def main():
     except Exception as e:
         result = "error " + str(e.args)
 
-    workflow_util.add_wf_item(wf, title=result, subtitle="operation result", copytext=result)
+    workflow_util.add_wf_item(wf, title=result, subtitle="operation result", arg=result)
 
     wf.send_feedback()
 
