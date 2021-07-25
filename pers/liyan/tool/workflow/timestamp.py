@@ -258,12 +258,17 @@ def main():
         current_second_2 = time.strftime("%Y%m%d%H%M%S", now)
 
         # yyyy-MM-dd 格式
-        current_date_item = workflow_util.add_wf_item(wf, title='current date', subtitle='yyyy-MM-dd',
+        current_date_item = workflow_util.add_wf_item(wf, title='current date', subtitle=date_str_1,
                                                       arg=date_str_1,
                                                       valid=True)
+        # 使用按键切换格式
+        # yyyyMMdd 格式
+        current_date_item.add_modifier('alt', subtitle=date_str_2, arg=date_str_2, valid=True)
         # yyyy-MM-dd HH:mm:ss 格式
-        workflow_util.add_wf_item(wf, title='current second [yyyy-MM-dd HH:mm:ss]', subtitle=current_second_1,
-                                  arg=current_second_1)
+        current_second_item = workflow_util.add_wf_item(wf, title='current second', subtitle=current_second_1,
+                                                        arg=current_second_1)
+        # yyyyMMddHHmmss 格式
+        current_second_item.add_modifier('alt', subtitle=current_second_2, arg=current_second_2, valid=True)
 
         # 当天起止时间 ms
         add_duration_to_workflow(duration_of_day, now, wf, "day")
@@ -274,17 +279,11 @@ def main():
         # 分钟的起止时间 ms
         add_duration_to_workflow(duration_of_minute, now, wf, "minute")
 
-        # yyyyMMdd 格式
-        workflow_util.add_wf_item(wf, title='current date [yyyyMMdd]', subtitle=date_str_2, arg=date_str_2,
-                                  valid=True)
-
-        # yyyyMMddHHmmss 格式
-        workflow_util.add_wf_item(wf, title='current second [yyyyMMddHHmmss]', subtitle=current_second_2,
-                                  arg=current_second_2)
-
-        workflow_util.add_wf_item(wf, title='current ms timestamp', subtitle=timestamp_ms, arg=timestamp_ms)
-
-        workflow_util.add_wf_item(wf, title='current second timestamp', subtitle=timestamp_s, arg=timestamp_s)
+        # 当前时间戳 ms
+        current_timestamp_item = workflow_util.add_wf_item(wf, title='current timestamp',
+                                                           subtitle='%s(ms)' % timestamp_ms, arg=timestamp_ms)
+        # s 时间戳
+        current_timestamp_item.add_modifier('alt', subtitle='%s(s)' % timestamp_s, arg=timestamp_s, valid=True)
 
     elif operation == '1':
         # ms 时间戳转换为时间
@@ -351,7 +350,7 @@ def main():
     elif operation == '3':
         date_time_list = parse_datetime_with_ts_ms_batch(txt_content)
         date_time_sec_str = ', '.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
-        workflow_util.add_wf_item(wf, title='parse second datetime batch',
+        workflow_util.add_wf_item(wf, title='parse million second datetime batch',
                                   subtitle=date_time_sec_str,
                                   arg=date_time_sec_str)
 
