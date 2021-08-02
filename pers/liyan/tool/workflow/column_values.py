@@ -1,0 +1,70 @@
+# -*- coding: UTF-8 -*-
+import sys
+
+import pyperclip
+
+from wf_utils import workflow_util
+from workflow import Workflow3
+
+
+def main():
+    """
+    从 sql 平台查询的结果不需要进行导出即可获得指定列的数据
+    :return:
+    """
+
+    # 参数
+    param = sys.argv[1] if len(sys.argv) > 1 else '2'
+
+    # 读取剪贴板内容
+    content = pyperclip.paste()
+
+    if not content:
+        return
+
+    # 根据 \n 拆分成行
+    row_list = content.split('\n')
+
+    # 按照列拆分
+    row_list = list(map(lambda row: row.split('\t'), row_list))
+
+    # 存储最后的结果
+    column_value_list = []
+    # 如果行数少于 3 行, 无法确定一行的列数, 取第 1 行的第一个元素和第 2 行的最后一个元素作为结果
+    if len(row_list) <= 2:
+        column_value_list.append(row_list[0][0])
+        if len(row_list) > 1:
+            column_value_list.append(row_list[1][-1])
+        pass
+    else:
+        # 一行的列数
+        column_count = len(row_list[1])
+        # 选中的行的 index
+        selected_column_idx = column_count - len(row_list[0])
+        for i, row in enumerate(row_list):
+            # 第1行取第1列
+            if i == 0:
+                column_value_list.append(row[0])
+            # 列数过少, 跳过
+            elif len(row) <= selected_column_idx:
+                continue
+            # 按照索引获取
+            else:
+                column_value_list.append(row[selected_column_idx])
+
+    # workflow
+    wf = Workflow3()
+
+    if param == '1':
+        column_values_str = '\n'.join(map(lambda c: "'" + c + "'", column_value_list))
+    else:
+        column_values_str = '\n'.join(column_value_list)
+
+    workflow_util.add_wf_item(wf, title=repr(column_values_str), subtitle=r'column values', arg=column_values_str,
+                              valid=True)
+
+    wf.send_feedback()
+
+
+if __name__ == '__main__':
+    main()
