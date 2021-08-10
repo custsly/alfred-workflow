@@ -176,34 +176,40 @@ def parse_datetime_with_ts_ms_batch(timestamps_str):
 
 def analysis_operation(txt_content):
     """
-    根据文本内容预测操作类型
+    根据文本内容预测操作类型, 必要的时候处理文本内容
     :param txt_content: 文本内容
-    :return: 0, 1, 2
+    :return: 0, 1, 2 处理后的文本内容
     """
     # 空值, 类型 0
     if not txt_content:
-        return '0'
+        return '0', txt_content
 
     # 不存在数字, 无意义
     if re.search(r'\d', txt_content) is None:
-        return '0'
+        return '0', txt_content
 
     # 包含非数字字符, 并且替换掉非数字之后长度 >= 8
     if re.search(r'\D', txt_content) is not None:
         # 如果包含的非数字字符只有空格 tab 逗号
         if re.search(r'[^, \t\d]', txt_content) is None:
-            return '3'
+            return '3', txt_content
+        elif re.search(r'[^:：\d]', txt_content) is None:
+            # 如果包含的非数字字符只有 冒号, 作为时间处理, 前面追加年月日
+            timestamp = time.time()
+            now = time.localtime(timestamp)
+            date_str = time.strftime("%Y-%m-%d", now)
+            return '2', '%s %s' % (date_str, txt_content)
         elif len(re.sub(r'\D', '', txt_content)) >= 8:
-            # 非数字替换成空白字符, 长度 >= 8 作为时间戳处理
-            return '2'
+            # 非数字替换成空白字符, 长度 >= 8 作为字符串转时间戳处理
+            return '2', txt_content
         else:
-            return '0'
+            return '0', txt_content
 
     # 纯数字字符, 长度超过 14 位无意义
     if len(txt_content) <= 14:
-        return '1'
+        return '1', txt_content
 
-    return '0'
+    return '0', txt_content
 
 
 def analysis_operation_and_data():
@@ -221,12 +227,12 @@ def analysis_operation_and_data():
     if arg is None:
         # 读取剪贴板
         clip_content = workflow_util.strip(pyperclip.paste())
-        return analysis_operation(clip_content), clip_content
+        return analysis_operation(clip_content)
 
     # 不需要读取剪贴板的情况
     if arg not in OPERATION_TUP:
         arg = workflow_util.strip(arg)
-        return analysis_operation(arg), arg
+        return analysis_operation(arg)
     else:
         # 读取剪贴板
         clip_content = workflow_util.strip(pyperclip.paste())
