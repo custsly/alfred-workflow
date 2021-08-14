@@ -118,10 +118,13 @@ def add_duration_to_workflow(func, datetime, workflow, duration_name):
     """
     start_of_duration, duration_start_ms, end_of_duration, duration_end_ms = func(datetime)
     duration_total = '%s, %s' % (duration_start_ms, duration_end_ms)
+    duration_total1 = '%s %s' % (duration_start_ms, duration_end_ms)
 
-    workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration, end_of_duration),
-                              subtitle=duration_total,
-                              arg=duration_total)
+    duration_total_item = workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration,
+                                                                                     end_of_duration),
+                                                    subtitle=duration_total,
+                                                    arg=duration_total)
+    duration_total_item.add_modifier('alt', subtitle=duration_total1, arg=duration_total1, valid=True)
     workflow_util.add_wf_item(workflow, title='start of %s(ms), "%s"' % (duration_name, start_of_duration),
                               subtitle=duration_start_ms,
                               arg=duration_start_ms)
