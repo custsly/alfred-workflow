@@ -68,7 +68,7 @@ def wrap_with_symbol(txt_list, symbol="'"):
     :return: 返回
     """
 
-    return map(lambda txt: symbol + txt + symbol, txt_list)
+    return list(map(lambda txt: symbol + txt + symbol, txt_list))
 
 
 def un_wrap_brackets(text):
