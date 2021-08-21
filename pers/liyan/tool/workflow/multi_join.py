@@ -7,6 +7,17 @@ from wf_utils import workflow_util
 from workflow import Workflow3
 
 
+def transpose_2d(data):
+    transposed = []
+    for i in range(len(data[0])):
+        new_row = []
+        for row in data:
+            if len(row) > i:
+                new_row.append(row[i])
+        transposed.append(new_row)
+    return transposed
+
+
 def main():
     """
     读取剪贴板, 移除 \r, 按照 \n 拆分行, 按照 \t 拆分列, 使用给定的参数对所有列进行 join
@@ -40,8 +51,11 @@ def main():
     else:
         sheet = list(map(lambda row: workflow_util.wrap_with_symbol(row, param), sheet))
 
+    # 转置处理
+    sheet_transpose = transpose_2d(sheet)
+
     # 第一行增加左括号
-    sheet[0] = map(lambda s: '(' + s, sheet[0])
+    sheet[0] = list(map(lambda s: '(' + s, sheet[0]))
     # 最后一行增加右括号
     for i in range(0, len(sheet)):
         for j in range(0, len(sheet[i])):
@@ -55,6 +69,9 @@ def main():
     # 按照原有excel行列格式处理
     excel_format = '\n'.join(map(lambda txt_list: '\t'.join(txt_list), sheet))
     workflow_util.add_wf_item(wf, title=excel_format, subtitle='excel_format', arg=excel_format)
+
+    transpose_result = '\n'.join(map(lambda txt_list: ','.join(txt_list), sheet_transpose))
+    workflow_util.add_wf_item(wf, title=transpose_result, subtitle='transpose_result', arg=transpose_result)
 
     #
     # # 为了防止有特殊字符导致粘贴到 excel 中不能正确分列, 每一个单元格使用双引号处理
