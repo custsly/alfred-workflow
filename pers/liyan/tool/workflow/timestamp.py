@@ -193,14 +193,24 @@ def analysis_operation(txt_content):
 
     # 包含非数字字符, 并且替换掉非数字之后长度 >= 8
     if re.search(r'\D', txt_content) is not None:
-        # 如果包含的非数字字符只有空格 tab 逗号
-        if re.search(r'[^, \t\d]', txt_content) is None:
+        # 格式类似 1629648000000	1629676800000	1629707400000
+        if re.match(r'(\d+[,\t\n ]+)+\d+', txt_content):
             return '3', txt_content
-        elif re.search(r'[^:：\d]', txt_content) is None:
-            # 如果包含的非数字字符只有 冒号, 作为时间处理, 前面追加年月日
+        # 匹配格式 2.32.12 4:12:23 3.12 当做时分秒处理, 在前面拼接年月日
+        elif re.match(r'(\d{1,2}[\\.:])+\d{1,2}', txt_content):
+            time_list = re.sub(r'\D+', ' ', txt_content).split(' ')
+            txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
             timestamp = time.time()
             now = time.localtime(timestamp)
             date_str = time.strftime("%Y-%m-%d", now)
+            return '2', '%s %s' % (date_str, txt_content)
+        # 匹配格式08-21 8-21, 当做月和日处理, 在前面拼接年份
+        elif re.match(r'(\d{1,2}[-])+\d{1,2}', txt_content):
+            time_list = re.sub(r'\D+', ' ', txt_content).split(' ')
+            txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
+            timestamp = time.time()
+            now = time.localtime(timestamp)
+            date_str = time.strftime("%Y", now)
             return '2', '%s %s' % (date_str, txt_content)
         elif len(re.sub(r'\D', '', txt_content)) >= 8:
             # 非数字替换成空白字符, 长度 >= 8 作为字符串转时间戳处理
@@ -208,28 +218,30 @@ def analysis_operation(txt_content):
         else:
             return '0', txt_content
 
-    # 纯数字字符, 长度超过 14 位无意义
+    # 纯数字字符, 长度超过 14 位无意义, 否则按照时间戳处理
     if len(txt_content) <= 14:
         return '1', txt_content
 
     return '0', txt_content
 
 
-def analysis_operation_and_data():
+def analysis_operation_and_data(args, clip_content):
     """
     分析得到操作类型和数据内容
+    :param args 命令行参数
+    :param clip_content 剪贴板内容
     :return: 操作类型, 时间数据
     """
 
     # 取命令行参数
     arg = None
-    if len(sys.argv) > 1 and sys.argv[1]:
-        arg = sys.argv[1]
+    if len(args) > 1 and args[1]:
+        arg = args[1]
 
     # 没有传参数
     if arg is None:
         # 读取剪贴板
-        clip_content = workflow_util.strip(pyperclip.paste())
+        clip_content = workflow_util.strip(clip_content)
         return analysis_operation(clip_content)
 
     # 不需要读取剪贴板的情况
@@ -238,19 +250,21 @@ def analysis_operation_and_data():
         return analysis_operation(arg)
     else:
         # 读取剪贴板
-        clip_content = workflow_util.strip(pyperclip.paste())
+        clip_content = workflow_util.strip(clip_content)
         return arg, clip_content
 
 
-def main():
+def flow(args, clip_content):
     """
     读取剪贴板, 或者从命令行获取参数
     命令行可以指定操作类型(0, 1, 2), 此时时间数据从剪贴板获取
     命令行不指定操作类型时时间数据优先从命令行获取, 命令行为空则使用剪贴板数据
+    :param args 命令行参数
+    :param clip_content 剪贴板内容
     :return:
     """
 
-    operation, txt_content = analysis_operation_and_data()
+    operation, txt_content = analysis_operation_and_data(args, clip_content)
 
     # workflow
     wf = Workflow3()
@@ -362,8 +376,16 @@ def main():
         workflow_util.add_wf_item(wf, title='parse million second datetime batch',
                                   subtitle=date_time_sec_str,
                                   arg=date_time_sec_str)
+        date_time_sec_str_lines = '\n'.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
+        workflow_util.add_wf_item(wf, title='parse million second datetime batch lines',
+                                  subtitle=date_time_sec_str_lines,
+                                  arg=date_time_sec_str_lines)
 
     wf.send_feedback()
+
+
+def main():
+    flow(sys.argv, pyperclip.paste())
 
 
 if __name__ == '__main__':
