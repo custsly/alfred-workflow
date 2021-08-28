@@ -7,16 +7,18 @@ from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def main():
+def flow(args, clip_content):
     """
     读取剪贴板, 移除空白行, 使用给定的参数进行 join
+    :param args: 命令行参数, 1 - 字符串类型, 2 - 数值类型, 其他参数作为包装字符串的字符
+    :param clip_content: 剪贴板内容
     :return:
     """
     # 参数
-    param = sys.argv[1] if len(sys.argv) > 1 else '2'
+    param = args[1] if len(args) > 1 else '2'
 
     # 读取剪贴板内容
-    txt = pyperclip.paste()
+    txt = clip_content
     txt = workflow_util.remove_blank_exclude_newline(txt)
     txt_list = txt.split('\n')
 
@@ -86,6 +88,10 @@ def main():
                                                       arg=one_line_with_brackets_distinct_no_space, valid=True)
 
     wf.send_feedback()
+
+
+def main():
+    flow(sys.argv, pyperclip.paste())
 
 
 if __name__ == '__main__':

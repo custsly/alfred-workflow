@@ -7,23 +7,21 @@ from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def main():
+def flow(args, clip_content):
     """
-    从 sql 平台查询的结果不需要进行导出即可获得指定列的数据
+    workflow主要逻辑, 从SQL平台查询结果中提取一列数据
+    :param args: 命令行参数, 1 - 字符串类型, 2 - 数值类型
+    :param clip_content: 剪贴板内容
     :return:
     """
-
     # 参数
-    param = sys.argv[1] if len(sys.argv) > 1 else '2'
+    param = args[1] if len(args) > 1 else '2'
 
-    # 读取剪贴板内容
-    content = pyperclip.paste()
-
-    if not content:
+    if not clip_content:
         return
 
     # 根据 \n 拆分成行
-    row_list = content.split('\n')
+    row_list = clip_content.split('\n')
 
     # 按照列拆分
     row_list = list(map(lambda row: row.split('\t'), row_list))
@@ -64,6 +62,10 @@ def main():
                               valid=True)
 
     wf.send_feedback()
+
+
+def main():
+    flow(sys.argv, pyperclip.paste())
 
 
 if __name__ == '__main__':

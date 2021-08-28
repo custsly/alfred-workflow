@@ -120,17 +120,17 @@ def add_duration_to_workflow(func, datetime, workflow, duration_name):
     duration_total = '%s, %s' % (duration_start_ms, duration_end_ms)
     duration_total1 = '%s %s' % (duration_start_ms, duration_end_ms)
 
-    duration_total_item = workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration,
-                                                                                     end_of_duration),
-                                                    subtitle=duration_total,
-                                                    arg=duration_total)
-    duration_total_item.add_modifier('alt', subtitle=duration_total1, arg=duration_total1, valid=True)
     workflow_util.add_wf_item(workflow, title='start of %s(ms), "%s"' % (duration_name, start_of_duration),
                               subtitle=duration_start_ms,
                               arg=duration_start_ms)
     workflow_util.add_wf_item(workflow, title='end of %s(ms), "%s"' % (duration_name, end_of_duration),
                               subtitle=duration_end_ms,
                               arg=duration_end_ms)
+    duration_total_item = workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration,
+                                                                                     end_of_duration),
+                                                    subtitle=duration_total,
+                                                    arg=duration_total)
+    duration_total_item.add_modifier('alt', subtitle=duration_total1, arg=duration_total1, valid=True)
 
 
 def parse_datetime_with_timestamp_s(timestamp):
@@ -257,7 +257,7 @@ def analysis_operation_and_data(args, clip_content):
 def flow(args, clip_content):
     """
     读取剪贴板, 或者从命令行获取参数
-    命令行可以指定操作类型(0, 1, 2), 此时时间数据从剪贴板获取
+    命令行可以指定操作类型(0, 1, 2, 3), 此时时间数据从剪贴板获取
     命令行不指定操作类型时时间数据优先从命令行获取, 命令行为空则使用剪贴板数据
     :param args 命令行参数
     :param clip_content 剪贴板内容
@@ -293,6 +293,10 @@ def flow(args, clip_content):
         # yyyyMMddHHmmss 格式
         current_second_item.add_modifier('alt', subtitle=current_second_2, arg=current_second_2, valid=True)
 
+        # 当前时间戳 ms
+        current_timestamp_item = workflow_util.add_wf_item(wf, title='current timestamp',
+                                                           subtitle='%s(ms)' % timestamp_ms, arg=timestamp_ms)
+
         # 当天起止时间 ms
         add_duration_to_workflow(duration_of_day, now, wf, "day")
 
@@ -302,9 +306,6 @@ def flow(args, clip_content):
         # 分钟的起止时间 ms
         add_duration_to_workflow(duration_of_minute, now, wf, "minute")
 
-        # 当前时间戳 ms
-        current_timestamp_item = workflow_util.add_wf_item(wf, title='current timestamp',
-                                                           subtitle='%s(ms)' % timestamp_ms, arg=timestamp_ms)
         # s 时间戳
         current_timestamp_item.add_modifier('alt', subtitle='%s(s)' % timestamp_s, arg=timestamp_s, valid=True)
 
@@ -371,11 +372,14 @@ def flow(args, clip_content):
                                       subtitle=timestamp_s,
                                       arg=timestamp_s)
     elif operation == '3':
+        # 批量将时间戳转换为字符串
         date_time_list = parse_datetime_with_ts_ms_batch(txt_content)
+        # 使用逗号分隔
         date_time_sec_str = ', '.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
         workflow_util.add_wf_item(wf, title='parse million second datetime batch',
                                   subtitle=date_time_sec_str,
                                   arg=date_time_sec_str)
+        # 使用换行分割
         date_time_sec_str_lines = '\n'.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
         workflow_util.add_wf_item(wf, title='parse million second datetime batch lines',
                                   subtitle=date_time_sec_str_lines,
