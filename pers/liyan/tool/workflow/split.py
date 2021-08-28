@@ -7,18 +7,21 @@ from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def main():
+def flow(args, clip_content):
     """
     读取剪贴板, split 参数
+    :param args 命令行参数, 切分的分隔符, 默认 ,
+    :param clip_content 剪贴板内容
     :return:
     """
+
     # split的字符串, 默认值 ,
     splitter = ','
-    if len(sys.argv) > 1 and sys.argv[1]:
-        splitter = sys.argv[1]
+    if len(args) > 1 and args[1]:
+        splitter = args[1]
 
     # 读取剪贴板内容
-    txt = pyperclip.paste()
+    txt = clip_content
     # 移除空白字符
     txt = workflow_util.remove_blank(txt)
     # 移除两端的括号
@@ -41,6 +44,10 @@ def main():
                               arg=split_unwrap_result)
 
     wf.send_feedback()
+
+
+def main():
+    flow(sys.argv, pyperclip.paste())
 
 
 if __name__ == '__main__':

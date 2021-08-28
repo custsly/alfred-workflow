@@ -27,23 +27,25 @@ def partition_by(init_list, partition_size):
     return partition_list
 
 
-def main():
+def flow(args, clip_content):
     """
     读取剪贴板, 移除空白行, 按照 \n 拆分之后对 list 进行分割
+    :param args 命令行参数, 分片大小, 默认 100
+    :param clip_content 剪贴板内容
     :return:
     """
 
     # 默认大小 100
     size = 100
-    if len(sys.argv) > 1:
+    if len(args) > 1:
         try:
-            size = int(sys.argv[1])
+            size = int(args[1])
         except ValueError as e:
             pass
     # 非法参数, 暂不处理
 
     # 读取剪贴板内容
-    txt = pyperclip.paste()
+    txt = clip_content
     txt = workflow_util.remove_blank_exclude_newline(txt)
     txt_list = txt.split('\n')
     # 拆分 list
@@ -71,6 +73,10 @@ def main():
                               arg=multi_column_result)
 
     wf.send_feedback()
+
+
+def main():
+    flow(sys.argv, pyperclip.paste())
 
 
 if __name__ == '__main__':

@@ -18,16 +18,18 @@ def transpose_2d(data):
     return transposed
 
 
-def main():
+def flow(args, clip_content):
     """
     读取剪贴板, 移除 \r, 按照 \n 拆分行, 按照 \t 拆分列, 使用给定的参数对所有列进行 join
+    :param args 命令行参数, 1-字符串, 2-数值
+    :param clip_content 剪贴板内容
     :return:
     """
     # 参数
-    param = sys.argv[1]
+    param = args[1]
 
     # 读取剪贴板内容
-    txt = pyperclip.paste()
+    txt = clip_content
 
     if txt is None:
         txt = ''
@@ -96,6 +98,10 @@ def main():
     #                           copytext=one_line_with_brackets_no_space)
 
     wf.send_feedback()
+
+
+def main():
+    flow(sys.argv, pyperclip.paste())
 
 
 if __name__ == '__main__':
