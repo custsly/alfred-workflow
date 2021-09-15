@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import browser_cookie3
 
 
 def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True, arg=None, icon=None, icontype=None):
@@ -101,3 +102,36 @@ def remove_blank_element(text_list):
     """
 
     return [text for text in text_list if text.strip()]
+
+
+def build_cookie_dict(browser_cookies):
+    """
+    browser_cookie3 获取到的cookie转换为dict
+    :param browser_cookies: cookie 集合
+    :return:
+    """
+    if not browser_cookies:
+        return {}
+    else:
+        return {c.name: c.value for c in browser_cookies}
+
+
+def filter_and_convert_cookies(browser_cookies, cookie_domains):
+    """
+    根据domain过滤cookie, 转换为字典
+    :param browser_cookies:
+    :param cookie_domains:
+    :return:
+    """
+    if not browser_cookies:
+        return {}
+    return build_cookie_dict(filter(lambda c: c.domain in cookie_domains, browser_cookies))
+
+
+def chrome_cookies(cookie_domains):
+    """
+    通过 browser_cookie3 获取 chrome 的cookie, 转换为字典返回
+    :param cookie_domains: domains
+    :return:
+    """
+    return filter_and_convert_cookies(browser_cookie3.chrome(), cookie_domains)
