@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-import browser_cookie3
 
 
 def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True, arg=None, icon=None, icontype=None):
@@ -134,4 +133,6 @@ def chrome_cookies(cookie_domains):
     :param cookie_domains: domains
     :return:
     """
+    # 动态导入, 使用缓存时可以加快速度, 加载 browser_cookie3 模块耗时较长
+    browser_cookie3 = __import__('browser_cookie3')
     return filter_and_convert_cookies(browser_cookie3.chrome(), cookie_domains)
