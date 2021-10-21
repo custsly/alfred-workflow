@@ -120,12 +120,13 @@ def add_duration_to_workflow(func, datetime, workflow, duration_name):
     duration_total = '%s, %s' % (duration_start_ms, duration_end_ms)
     duration_total1 = '%s %s' % (duration_start_ms, duration_end_ms)
 
-    workflow_util.add_wf_item(workflow, title='start of %s(ms), "%s"' % (duration_name, start_of_duration),
-                              subtitle=duration_start_ms,
-                              arg=duration_start_ms)
-    workflow_util.add_wf_item(workflow, title='end of %s(ms), "%s"' % (duration_name, end_of_duration),
-                              subtitle=duration_end_ms,
-                              arg=duration_end_ms)
+    ms_of_duration_item = workflow_util.add_wf_item(workflow, title='ms timestamp of %s' % duration_name,
+                                                    subtitle='%s %s (start of %s)'
+                                                             % (duration_start_ms, start_of_duration, duration_name),
+                                                    arg=duration_start_ms)
+    ms_of_duration_item.add_modifier('alt', subtitle='%s %s (start of %s)'
+                                                     % (duration_end_ms, end_of_duration, duration_name),
+                                     arg=duration_end_ms)
     duration_total_item = workflow_util.add_wf_item(workflow, title='%s [%s, %s]' % (duration_name, start_of_duration,
                                                                                      end_of_duration),
                                                     subtitle=duration_total,
@@ -349,14 +350,14 @@ def flow(args, clip_content):
             date_time_str = format_time(date_time)
 
             # ms 时间戳 ms 值 000
-            workflow_util.add_wf_item(wf, title='ms timestamp start of second, "%s"' % date_time_str,
-                                      subtitle=timestamp_s * 1000,
-                                      arg=timestamp_s * 1000)
+            second_ms_timestamp_item = workflow_util.add_wf_item(wf, title='ms timestamp of second, "%s"'
+                                                                           % date_time_str,
+                                                                 subtitle='%s (start of second)' % (timestamp_s * 1000),
+                                                                 arg=timestamp_s * 1000)
 
             # ms 时间戳 ms 值 999
-            workflow_util.add_wf_item(wf, title='ms timestamp end of second, "%s"' % date_time_str,
-                                      subtitle=timestamp_s * 1000 + 999,
-                                      arg=timestamp_s * 1000 + 999)
+            second_ms_timestamp_item.add_modifier('alt', subtitle='%s (end of second)' % (timestamp_s * 1000 + 999),
+                                                  arg=timestamp_s * 1000 + 999, valid=True)
 
             # 当天起止时间 ms
             add_duration_to_workflow(duration_of_day, date_time, wf, "day")
