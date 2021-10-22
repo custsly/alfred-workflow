@@ -136,3 +136,31 @@ def chrome_cookies(cookie_domains):
     # 动态导入, 使用缓存时可以加快速度, 加载 browser_cookie3 模块耗时较长
     browser_cookie3 = __import__('browser_cookie3')
     return filter_and_convert_cookies(browser_cookie3.chrome(), cookie_domains)
+
+
+def is_number(s):
+    """
+    判断字符串是否是 数字
+    :param s: 字符串
+    :return: true/false
+    """
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+
+    return False
+
+
+def is_integer(s):
+    """
+    判断字符串是否是 整数
+    :param s: 字符串
+    :return: true/false
+    """
+    try:
+        int(s)
+        return True
+    except ValueError:
+        pass
