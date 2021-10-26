@@ -43,7 +43,7 @@ def build_md_image_tag(image_name, image_base64):
     full_image_base64 = 'data:image/jpeg;base64,' + image_base64
     image_base64_var = r'[{0}]: {1}'.format(image_name, full_image_base64)
     image_tag = '![{0}][{1}]'.format(image_name, image_name)
-    return image_tag + '\n' + image_base64_var
+    return image_tag + '\n\n' + image_base64_var
 
 
 def main():
@@ -53,7 +53,7 @@ def main():
     if not img_base64:
         workflow_util.add_wf_item(wf, title='not image in clipboard', subtitle=None, arg=None)
     else:
-        image_name = time.strftime("%Y%m%d%H%M%S", time.localtime())
+        image_name = 'clipboard_%s' % time.strftime("%Y%m%d%H%M%S", time.localtime())
         image_tag_str = build_md_image_tag(image_name, img_base64)
         workflow_util.add_wf_item(wf, title=image_name, subtitle='length %s' % len(image_tag_str), arg=image_tag_str)
 
