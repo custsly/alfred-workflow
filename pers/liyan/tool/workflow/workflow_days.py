@@ -19,7 +19,13 @@ def parse_date(datetime_str):
     if not datetime_str:
         return None
 
-    datetime_str = re.sub(r'\D', '', datetime_str)
+    # 匹配格式 08-21 8-21, 当做 MMdd 处理, 拼接当前年份
+    if re.match(r'(\d{1,2}[-])+\d{1,2}', datetime_str):
+        time_list = re.sub(r'\D', ' ', datetime_str).split(' ')
+
+        datetime_str = str(datetime.now().date().year) + (''.join(list(map(lambda t: t.rjust(2, '0'), time_list))))
+    else:
+        datetime_str = re.sub(r'\D', '', datetime_str)
 
     if len(datetime_str) > 14 or len(datetime_str) < 8:
         return None
@@ -47,6 +53,7 @@ def flow(args, clip_content):
         valid = False
     else:
         arg_arr = args[1].split(' ')
+        wf.logger.info('workflow_days arg_arr %s' % arg_arr)
         start_date = parse_date(arg_arr[0])
         end_date = parse_date(arg_arr[1]) if len(arg_arr) > 1 else datetime.now().date()
         if not start_date or not end_date:

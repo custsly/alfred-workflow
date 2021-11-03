@@ -2,6 +2,7 @@
 import re
 import sys
 import time
+from datetime import datetime
 
 import pyperclip
 
@@ -15,17 +16,17 @@ DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 OPERATION_TUP = ('0', '1', '2', '3')
 
 
-def format_time(datetime):
+def format_time(date_time):
     """
     按照 %Y-%m-%d %H:%M:%S 格式格式化时间
-    :param datetime: 时间对象
+    :param date_time: 时间对象
     :return: 字符串
     """
 
-    if not datetime:
+    if not date_time:
         return None
 
-    return time.strftime(DATE_TIME_FORMAT, datetime)
+    return time.strftime(DATE_TIME_FORMAT, date_time)
 
 
 def parse_time(datetime_str):
@@ -52,23 +53,23 @@ def parse_time(datetime_str):
         return None
 
 
-def parse_timestamp_s(datetime):
+def parse_timestamp_s(date_time):
     """
     time对象转换为 时间戳
-    :param datetime: 时间对象
+    :param date_time: 时间对象
     :return: 返回 s 级时间戳
     """
 
-    return int(time.mktime(datetime))
+    return int(time.mktime(date_time))
 
 
-def duration_of_hour(datetime):
+def duration_of_hour(date_time):
     """
     当前小时开始的时间戳, ms 值 000, 999
-    :param datetime: 时间
+    :param date_time: 时间
     :return: 开始时间, 开始时间戳 后三位ms 000, 结束时间, 结束时间戳 后三位 999
     """
-    hour_str = time.strftime("%Y-%m-%d %H", datetime)
+    hour_str = time.strftime("%Y-%m-%d %H", date_time)
     start_of_hour_str = hour_str + ':00:00'
     end_of_hour_str = hour_str + ':59:59'
     start_of_hour = time.strptime(start_of_hour_str, DATE_TIME_FORMAT)
@@ -77,13 +78,13 @@ def duration_of_hour(datetime):
         start_of_hour) * 1000 + 3600000 - 1
 
 
-def duration_of_minute(datetime):
+def duration_of_minute(date_time):
     """
     当前分钟的开始结束时间戳, ms
-    :param datetime: 时间
+    :param date_time: 时间
     :return:  开始时间, 开始时间戳, 结束时间, 结束时间戳
     """
-    minute_str = time.strftime("%Y-%m-%d %H:%M", datetime)
+    minute_str = time.strftime("%Y-%m-%d %H:%M", date_time)
     start_of_minute_str = minute_str + ':00'
     end_of_minute_str = minute_str + ':59'
     start_of_minute = time.strptime(start_of_minute_str, DATE_TIME_FORMAT)
@@ -92,13 +93,13 @@ def duration_of_minute(datetime):
         start_of_minute) * 1000 + 60000 - 1
 
 
-def duration_of_day(datetime):
+def duration_of_day(date_time):
     """
     当前日期开始的时间戳, ms 值 000, 999
-    :param datetime: 时间
+    :param date_time: 时间
     :return: 开始时间, 开始时间戳 后三位ms 000, 结束时间, 结束时间戳 后三位 999
     """
-    day_str = time.strftime("%Y-%m-%d", datetime)
+    day_str = time.strftime("%Y-%m-%d", date_time)
     start_of_day_str = day_str + ' 00:00:00'
     end_of_day_str = day_str + ' 23:59:59'
     start_of_day = time.strptime(start_of_day_str, DATE_TIME_FORMAT)
@@ -107,16 +108,16 @@ def duration_of_day(datetime):
         start_of_day) * 1000 + 86400000 - 1
 
 
-def add_duration_to_workflow(func, datetime, workflow, duration_name):
+def add_duration_to_workflow(func, date_time, workflow, duration_name):
     """
     在 workflow 增加一个区间的开始时间戳和结束时间戳
     :param func: 返回区间函数的 function, 需要4个返回值, 区间开始时间(文本格式), 开始时间戳(ms), 结束时间(文本), 结束时间戳(ms)
-    :param datetime: datetime
+    :param date_time: datetime
     :param workflow: workflow 对象
     :param duration_name: 区间名称 day/hour/minute
     :return:
     """
-    start_of_duration, duration_start_ms, end_of_duration, duration_end_ms = func(datetime)
+    start_of_duration, duration_start_ms, end_of_duration, duration_end_ms = func(date_time)
     duration_total = '%s, %s' % (duration_start_ms, duration_end_ms)
     duration_total1 = '%s %s' % (duration_start_ms, duration_end_ms)
 
@@ -199,20 +200,17 @@ def analysis_operation(txt_content):
             return '3', txt_content
         # 匹配格式 2.32.12 4:12:23 3.12 当做时分秒处理, 在前面拼接年月日
         elif re.match(r'(\d{1,2}[\\.:])+\d{1,2}', txt_content):
-            time_list = re.sub(r'\D+', ' ', txt_content).split(' ')
+            time_list = re.sub(r'\D', ' ', txt_content).split(' ')
             txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
             timestamp = time.time()
             now = time.localtime(timestamp)
             date_str = time.strftime("%Y-%m-%d", now)
-            return '2', '%s %s' % (date_str, txt_content)
+            return '2', (date_str + txt_content)
         # 匹配格式08-21 8-21, 当做月和日处理, 在前面拼接年份
         elif re.match(r'(\d{1,2}[-])+\d{1,2}', txt_content):
-            time_list = re.sub(r'\D+', ' ', txt_content).split(' ')
+            time_list = re.sub(r'\D', ' ', txt_content).split(' ')
             txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
-            timestamp = time.time()
-            now = time.localtime(timestamp)
-            date_str = time.strftime("%Y", now)
-            return '2', '%s %s' % (date_str, txt_content)
+            return '2', (str(datetime.now().date().year) + txt_content)
         elif len(re.sub(r'\D', '', txt_content)) >= 8:
             # 非数字替换成空白字符, 长度 >= 8 作为字符串转时间戳处理
             return '2', txt_content
