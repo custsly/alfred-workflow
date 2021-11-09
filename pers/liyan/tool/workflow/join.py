@@ -1,24 +1,24 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     读取剪贴板, 移除空白行, 使用给定的参数进行 join
-    :param args: 命令行参数, 1 - 字符串类型, 2 - 数值类型, 其他参数作为包装字符串的字符
-    :param clip_content: 剪贴板内容
+    :param args: -a 指定操作类型, 1 - 字符串类型, 2 - 数值类型, 其他参数作为包装字符串的字符 -c 剪贴板内容
     :return:
     """
     # 参数
-    param = args[1] if len(args) > 1 else '2'
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+    param = '2' if '-a' not in opts_dict else opts_dict.get('-a')
 
     # 读取剪贴板内容
-    txt = clip_content
+    txt = opts_dict.get('-c')
     txt = workflow_util.remove_blank_exclude_newline(txt)
     txt_list = txt.split('\n')
 
@@ -91,7 +91,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':
