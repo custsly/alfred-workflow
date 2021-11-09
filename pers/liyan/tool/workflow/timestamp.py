@@ -1,10 +1,9 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import re
 import sys
 import time
 from datetime import datetime
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
@@ -224,21 +223,16 @@ def analysis_operation(txt_content):
     return '0', txt_content
 
 
-def analysis_operation_and_data(args, clip_content):
+def analysis_operation_and_data(arg, clip_content):
     """
     分析得到操作类型和数据内容
-    :param args 命令行参数
+    :param arg 命令行参数
     :param clip_content 剪贴板内容
     :return: 操作类型, 时间数据
     """
 
-    # 取命令行参数
-    arg = None
-    if len(args) > 1 and args[1]:
-        arg = args[1]
-
     # 没有传参数
-    if arg is None:
+    if not arg:
         # 读取剪贴板
         clip_content = workflow_util.strip(clip_content)
         return analysis_operation(clip_content)
@@ -248,22 +242,22 @@ def analysis_operation_and_data(args, clip_content):
         arg = workflow_util.strip(arg)
         return analysis_operation(arg)
     else:
-        # 读取剪贴板
+        # 使用剪贴板内容
         clip_content = workflow_util.strip(clip_content)
         return arg, clip_content
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     读取剪贴板, 或者从命令行获取参数
     命令行可以指定操作类型(0, 1, 2, 3), 此时时间数据从剪贴板获取
     命令行不指定操作类型时时间数据优先从命令行获取, 命令行为空则使用剪贴板数据
-    :param args 命令行参数
-    :param clip_content 剪贴板内容
+    :param args 命令行参数 包含2个参数, -a 程序的参数, -c 剪贴板内容
     :return:
     """
-
-    operation, txt_content = analysis_operation_and_data(args, clip_content)
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+    operation, txt_content = analysis_operation_and_data(opts_dict.get('-a'), opts_dict.get('-c'))
 
     # workflow
     wf = Workflow3()
@@ -388,7 +382,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':
