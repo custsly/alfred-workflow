@@ -1,27 +1,27 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     读取剪贴板, split 参数
-    :param args 命令行参数, 切分的分隔符, 默认 ,
-    :param clip_content 剪贴板内容
+    :param args 命令行参数, -a 切分的分隔符, 默认 , -c 剪贴板的内容
     :return:
     """
 
+    # 参数
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+
     # split的字符串, 默认值 ,
-    splitter = ','
-    if len(args) > 1 and args[1]:
-        splitter = args[1]
+    splitter = ',' if not opts_dict.get('-a') else opts_dict.get('-a')
 
     # 读取剪贴板内容
-    txt = clip_content
+    txt = opts_dict.get('-c')
     # 移除空白字符
     txt = workflow_util.remove_blank(txt)
     # 移除两端的括号
@@ -47,7 +47,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':

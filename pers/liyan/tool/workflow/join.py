@@ -15,7 +15,7 @@ def flow(args):
     # 参数
     opts, _ = getopt.getopt(args, "a:c:")
     opts_dict = dict(opts)
-    param = '2' if '-a' not in opts_dict else opts_dict.get('-a')
+    param = '2' if not opts_dict.get('-a') else opts_dict.get('-a')
 
     # 读取剪贴板内容
     txt = opts_dict.get('-c')
