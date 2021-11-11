@@ -1,22 +1,22 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     移除 \r, 按照 \n 拆分行, 按照 \t 拆分列, 转换为 markdown 格式的表格
-    :param args: 命令行参数, 1 - 字符串类型, 2 - 数值类型, 其他参数作为包装字符串的字符
-    :param clip_content: 剪贴板内容
+    :param args: -c 剪贴板内容
     :return:
     """
-
+    # 参数
+    opts, _ = getopt.getopt(args, "c:")
+    opts_dict = dict(opts)
     # 读取剪贴板内容
-    txt = clip_content
+    txt = opts_dict.get('-c')
 
     if txt is None:
         txt = ''
@@ -60,7 +60,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':

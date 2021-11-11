@@ -1,29 +1,31 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     读取剪贴板, repeat
-    :param args 命令行参数, 重复次数
-    :param clip_content 剪贴板内容
+    :param args 命令行参数, -a 重复次数, -c 剪贴板内容
     :return:
     """
-    # split的字符串, 默认值 ,
+    # 参数
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+
+    # 重复次数
     count = 1
-    if len(args) > 1 and args[1]:
+    if opts_dict.get('-a'):
         try:
             count = int(args[1])
         except ValueError as e:
             pass
 
     # 读取剪贴板内容
-    txt = clip_content
+    txt = opts_dict.get('-c')
 
     repeat_result = txt * count
 
@@ -38,7 +40,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':

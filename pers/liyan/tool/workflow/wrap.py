@@ -1,27 +1,29 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     包装字符串, 按照换行 /n 切分之后包装
-    :param args 命令行参数, 包装的字符串, 默认 ,
-    :param clip_content 剪贴板内容
+    :param args 命令行参数, -a 包装的字符串, 默认 , -c 剪贴板内容
     :return:
     """
 
+    # 参数
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+
     # 包装的字符串
     wrapper = ''
-    if len(args) > 1:
+    if opts_dict.get('-a'):
         wrapper = args[1]
 
     # 读取剪贴板内容
-    txt = clip_content
+    txt = opts_dict.get('-c')
     # 移除空白字符
     txt = workflow_util.remove_blank_exclude_newline(txt)
     txt_list = txt.split('\n')
@@ -34,13 +36,13 @@ def flow(args, clip_content):
     # result
     result = '\n'.join(txt_list)
 
-    workflow_util.add_wf_item(wf, title=result, subtitle="wrapper with " + wrapper, copytext=result)
+    workflow_util.add_wf_item(wf, title=result, subtitle="wrapper with " + wrapper, arg=result, copytext=result)
 
     wf.send_feedback()
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':

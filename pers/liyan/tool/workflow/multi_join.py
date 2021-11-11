@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
 
 import pyperclip
@@ -18,18 +19,19 @@ def transpose_2d(data):
     return transposed
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     读取剪贴板, 移除 \r, 按照 \n 拆分行, 按照 \t 拆分列, 使用给定的参数对所有列进行 join
-    :param args 命令行参数, 1-字符串, 2-数值
-    :param clip_content 剪贴板内容
+    :param args 命令行参数, -a 1-字符串, 2-数值, -c 剪贴板内容
     :return:
     """
     # 参数
-    param = args[1]
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
 
     # 读取剪贴板内容
-    txt = clip_content
+    param = opts_dict.get('-a')
+    txt = opts_dict.get('-c')
 
     if txt is None:
         txt = ''
@@ -101,7 +103,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':

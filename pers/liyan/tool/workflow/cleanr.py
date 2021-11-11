@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
-
-import pyperclip
-from workflow import Workflow3
+import getopt
+import sys
 
 from wf_utils import workflow_util
+from workflow import Workflow3
 
 
 def remove_return(content):
@@ -15,14 +15,16 @@ def remove_return(content):
     return content.replace('\r\n', '\n')
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     workflow主要方法, 替换剪贴板内容 \r\n 为 \n
-    :param args: 命令行参数
-    :param clip_content: 剪贴板内容
+    :param args: 命令行参数 -c 剪贴板内容
     :return:
     """
-    txt = remove_return(clip_content)
+    # 参数
+    opts, _ = getopt.getopt(args, "c:")
+    opts_dict = dict(opts)
+    txt = remove_return(opts_dict.get('-c'))
 
     # workflow
     wf = Workflow3()
@@ -33,7 +35,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow([], pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':
