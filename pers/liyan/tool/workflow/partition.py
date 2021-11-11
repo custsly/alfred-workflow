@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
@@ -27,17 +26,20 @@ def partition_by(init_list, partition_size):
     return partition_list
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     读取剪贴板, 移除空白行, 按照 \n 拆分之后对 list 进行分割
-    :param args 命令行参数, 分片大小, 默认 100
-    :param clip_content 剪贴板内容
+    :param args 命令行参数, -a 分片大小, 默认 100 -c 剪贴板内容
     :return:
     """
 
+    # 参数
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+
     # 默认大小 100
     size = 100
-    if len(args) > 1:
+    if opts_dict.get('-a'):
         try:
             size = int(args[1])
         except ValueError as e:
@@ -45,7 +47,7 @@ def flow(args, clip_content):
     # 非法参数, 暂不处理
 
     # 读取剪贴板内容
-    txt = clip_content
+    txt = opts_dict.get('-c')
     txt = workflow_util.remove_blank_exclude_newline(txt)
     txt_list = txt.split('\n')
     # 拆分 list
@@ -76,7 +78,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':
