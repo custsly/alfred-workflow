@@ -1,21 +1,23 @@
 # -*- coding: UTF-8 -*-
+import getopt
 import sys
-
-import pyperclip
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     workflow主要逻辑, 从SQL平台查询结果中提取一列数据
-    :param args: 命令行参数, 1 - 字符串类型, 2 - 数值类型
-    :param clip_content: 剪贴板内容
+    :param args: -a 命令行参数, 1 - 字符串类型, 2 - 数值类型, -c 剪贴板内容
     :return:
     """
     # 参数
-    param = args[1] if len(args) > 1 else '2'
+    opts, _ = getopt.getopt(args, "a:c:")
+    opts_dict = dict(opts)
+
+    param = args[1] if opts_dict.get('-a') else '2'
+    clip_content = opts_dict.get('-c')
 
     if not clip_content:
         return
@@ -24,7 +26,7 @@ def flow(args, clip_content):
     row_list = clip_content.split('\n')
 
     # 按照列拆分
-    row_list = list(map(lambda row: row.split('\t'), row_list))
+    row_list = list(map(lambda r: r.split('\t'), row_list))
 
     # 存储最后的结果
     column_value_list = []
@@ -65,7 +67,7 @@ def flow(args, clip_content):
 
 
 def main():
-    flow(sys.argv, pyperclip.paste())
+    flow(sys.argv[1:])
 
 
 if __name__ == '__main__':
