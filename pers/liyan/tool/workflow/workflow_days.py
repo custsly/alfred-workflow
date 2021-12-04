@@ -36,11 +36,10 @@ def parse_date(datetime_str):
         return None
 
 
-def flow(args, clip_content):
+def flow(args):
     """
     计算给定两个日期之间的天数
-    :param args: 命令行参数, 最多两个日期, 空格分隔
-    :param clip_content:
+    :param args: 命令行参数, -a 最多两个日期, 空格分隔
     :return:
     """
 
@@ -63,15 +62,23 @@ def flow(args, clip_content):
         workflow_util.add_wf_item(wf, title='illegal args %s' % args[1:])
     else:
         duration_days = abs((start_date - end_date).days)
-        workflow_util.add_wf_item(wf, title='%s days' % duration_days, subtitle='days between %s and %s' % (
-            start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')), copytext=duration_days, valid=True,
+        start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%d')
+
+        workflow_util.add_wf_item(wf, title='%s days' % duration_days, subtitle='days between (%s, %s]' % (
+            start_date_str, end_date_str), copytext=duration_days, valid=True,
                                   arg=duration_days)
+
+        include_duration_days = duration_days + 1
+        workflow_util.add_wf_item(wf, title='%s days' % include_duration_days, subtitle='days between [%s, %s]' % (
+            start_date_str, end_date_str), copytext=include_duration_days, valid=True,
+                                  arg=include_duration_days)
 
     wf.send_feedback()
 
 
 def main():
-    flow(sys.argv, None)
+    flow(sys.argv)
 
 
 if __name__ == '__main__':
