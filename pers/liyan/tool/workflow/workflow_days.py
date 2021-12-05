@@ -16,11 +16,13 @@ def parse_date(datetime_str):
     :return: 如果存在异常, 返回 None, 正常返回 时间对象
     """
 
+    datetime_str = workflow_util.strip(datetime_str)
+
     if not datetime_str:
         return None
 
     # 匹配格式 08-21 8-21, 当做 MMdd 处理, 拼接当前年份
-    if re.match(r'(\d{1,2}[-])+\d{1,2}', datetime_str):
+    if re.match(r'^\d{1,2}-\d{1,2}$', datetime_str):
         time_list = re.sub(r'\D', ' ', datetime_str).split(' ')
 
         datetime_str = str(datetime.now().date().year) + (''.join(list(map(lambda t: t.rjust(2, '0'), time_list))))
