@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 import requests
@@ -58,4 +59,4 @@ def download_today_wallpaper(dir_path):
 
 if __name__ == '__main__':
     # 阻止换行
-    print(download_today_wallpaper('/Users/shiliyan/Pictures/wallpaper/bing'), end='')
+    print(download_today_wallpaper(sys.argv[1]), end='')
