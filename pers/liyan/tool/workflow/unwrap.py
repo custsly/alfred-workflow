@@ -8,8 +8,8 @@ from workflow import Workflow3
 
 def flow(args):
     """
-    包装字符串, 按照换行 /n 切分之后包装
-    :param args 命令行参数, -a 包装的字符串, 默认 , -c 剪贴板内容
+    删除字符串两端指定的字符, 按照换行 /n 切分之后包装
+    :param args 命令行参数, -a 要删除的字符串, 默认 , -c 剪贴板内容
     :return:
     """
 
@@ -24,11 +24,11 @@ def flow(args):
 
     # 读取剪贴板内容
     txt = opts_dict.get('-c')
-    # 移除回车字符
+    # 移除回车
     txt = workflow_util.remove_carriage_return(txt)
     txt_list = txt.split('\n')
-    # 使用字符包装
-    txt_list = map(lambda x: wrapper + x + wrapper, txt_list)
+    # 移除字符串
+    txt_list = map(lambda x: x.strip(wrapper), txt_list)
 
     # workflow
     wf = Workflow3()
@@ -36,7 +36,7 @@ def flow(args):
     # result
     result = '\n'.join(txt_list)
 
-    workflow_util.add_wf_item(wf, title=result, subtitle="wrapper with " + wrapper, arg=result, copytext=result)
+    workflow_util.add_wf_item(wf, title=result, subtitle="un wrapper with " + wrapper, arg=result, copytext=result)
 
     wf.send_feedback()
 

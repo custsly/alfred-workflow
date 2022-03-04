@@ -20,6 +20,17 @@ def add_wf_item(wf, title, subtitle=None, copytext=None, valid=True, arg=None, i
                        icontype=icontype)
 
 
+def remove_carriage_return(content):
+    """
+    移除回车
+    :param content: 字符串
+    :return: 移除后的内容
+    """
+    if content is None:
+        return ''
+    return content.replace('\r', '')
+
+
 def remove_blank_exclude_newline(content):
     """
     移除空白, \t 空格, 保留 \n
