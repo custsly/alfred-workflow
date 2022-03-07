@@ -1,6 +1,7 @@
+import getopt
 import os
 import sys
-import time
+from datetime import datetime
 
 import requests
 from furl import furl
@@ -10,14 +11,29 @@ from workflow import Workflow3
 wf = Workflow3()
 
 
-def download_today_wallpaper(dir_path):
+def download_wallpaper(dir_path, date_str):
     """
-    下载当天的 bing 壁纸, UHD 版本
+    下载给定日期的 bing 壁纸, UHD 版本, 按照 给定日期格式 命名文件
     :param dir_path: 目录
+    :param date_str: 日期, yyyyMMdd
     :return: 图片路径
     """
 
-    date_suffix = time.strftime("%Y%m%d", time.localtime())
+    wf.logger.info('start download_wallpaper, dir_path: %s, date_str: %s' % (dir_path, date_str))
+
+    idx = 0
+    date_suffix = datetime.today().strftime('%Y%m%d')
+
+    if date_str:
+        image_date = datetime.strptime(date_str, '%Y%m%d').date()
+        days_offset = (datetime.today().date() - image_date).days
+        # 日期限制范围, 否则下载不到
+        if 0 <= days_offset <= 7:
+            idx = days_offset
+            date_suffix = date_str
+        else:
+            wf.logger.warn('invalid date: %s' % date_str)
+
     # 如果文件存在, 不进行下载, return
     file_list = os.listdir(dir_path)
     for file_name in file_list:
@@ -28,7 +44,8 @@ def download_today_wallpaper(dir_path):
     # if any(map(lambda f: date_suffix in f, file_list)):
     #     wf.logger.info('wallpaper of %s already exist' % date_suffix)
     #     return
-    image_info_json = requests.get('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN').json()
+    image_info_json = requests.get('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=1&mkt=zh-CN' % idx) \
+        .json()
     image_info = image_info_json['images'][0]
 
     wf.logger.info('image info %s' % image_info)
@@ -57,6 +74,19 @@ def download_today_wallpaper(dir_path):
     return image_file_path
 
 
+def flow_main(args):
+    """
+    下载 bing 壁纸, 支持指定文件路径和日期
+    :param args: -p 文件路径, -d 日期(可以为空, 默认当天)
+    :return:
+    """
+    opts, _ = getopt.getopt(args, "p:d:")
+    opts_dict = dict(opts)
+    image_dir_path = opts_dict.get('-p')
+    image_date_str = opts_dict.get('-d')
+    return download_wallpaper(image_dir_path, image_date_str)
+
+
 if __name__ == '__main__':
     # 阻止换行
-    print(download_today_wallpaper(sys.argv[1]), end='')
+    print(flow_main(sys.argv[1:]), end='')
