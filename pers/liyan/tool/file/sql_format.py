@@ -27,7 +27,7 @@ def format_column_names(sql):
 
 
 if __name__ == '__main__':
-    # sql_file_path = '/Users/shiliyan/Downloads/test.sql'
+    # sql_file_path = '~/Downloads/test.sql'
 
     sql_file_path = None
     if len(sys.argv) > 1:
