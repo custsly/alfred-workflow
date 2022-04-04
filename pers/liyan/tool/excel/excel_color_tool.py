@@ -28,5 +28,4 @@ def coloring_by_unique_value(input_file_path, output_file_path, col_name):
 
 
 if __name__ == '__main__':
-    coloring_by_unique_value('/Users/shiliyan/Desktop/工号用户名问题_20220310的副本.xlsx',
-                             '/Users/shiliyan/Desktop/工号用户名问题_20220310的副本.xlsx', 'user_id')
+    coloring_by_unique_value('', '', 'user_id')
