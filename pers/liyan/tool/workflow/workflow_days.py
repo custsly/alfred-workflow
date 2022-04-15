@@ -53,7 +53,7 @@ def flow(args):
     if len(args) < 2 or not args[1]:
         valid = False
     else:
-        arg_arr = args[1].split(' ')
+        arg_arr = workflow_util.strip(re.sub(r'\s+', ' ', args[1])).split(' ')
         wf.logger.info('workflow_days arg_arr %s' % arg_arr)
         start_date = parse_date(arg_arr[0])
         end_date = parse_date(arg_arr[1]) if len(arg_arr) > 1 else datetime.now().date()
