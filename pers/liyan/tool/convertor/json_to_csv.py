@@ -16,11 +16,12 @@ def convert_json_to_csv(input_json_path, output_csv_path):
         csv_writer = csv.writer(csv_file)
 
         for index, data in enumerate(json_data):
-            if not index:
+            # 写入标题
+            if index == 0:
                 header = data.keys()
                 csv_writer.writerow(header)
-            else:
-                csv_writer.writerow(data.values())
+            
+            csv_writer.writerow(data.values())
 
 
 if __name__ == '__main__':

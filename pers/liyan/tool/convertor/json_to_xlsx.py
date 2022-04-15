@@ -17,10 +17,9 @@ def convert_json_to_xlsx(input_json_path, output_xlsx_path):
     column_list = None
 
     for index, data in enumerate(json_data):
-        if not index:
+        if index == 0:
             column_list = data.keys()
-        else:
-            all_rows.append(data.values())
+        all_rows.append(data.values())
 
     df = pd.DataFrame(all_rows, columns=column_list)
     df.to_excel(output_xlsx_path, index=False, engine='xlsxwriter')
