@@ -37,7 +37,7 @@ def download_wallpaper(dir_path, date_str):
     # 如果文件存在, 不进行下载, return
     file_list = os.listdir(dir_path)
     for file_name in file_list:
-        if date_suffix in file_name:
+        if date_suffix in file_name and file_name.endswith(".copyright"):
             wf.logger.info('wallpaper of %s already exist' % file_name)
             return os.path.join(dir_path, file_name)
 
@@ -71,6 +71,13 @@ def download_wallpaper(dir_path, date_str):
     with open(image_file_path, "wb") as attach:
         attach.write(image_response.content)
     wf.logger.info('save download image finish %s' % image_file_path)
+
+    # 保存 copyright
+    copyright_file_path = os.path.join(dir_path, '{0}_{1}{2}'.format(title, date_suffix, '.copyright'))
+    with open(copyright_file_path, "w") as copyright_file:
+        copyright_file.write(image_info['copyright'])
+    wf.logger.info('save copyright finish %s' % copyright_file_path)
+
     return image_file_path
 
 
