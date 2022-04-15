@@ -201,9 +201,7 @@ def analysis_operation(txt_content):
         elif re.match(r'(\d{1,2}[\\.:])+\d{1,2}', txt_content):
             time_list = re.sub(r'\D', ' ', txt_content).split(' ')
             txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
-            timestamp = time.time()
-            now = time.localtime(timestamp)
-            date_str = time.strftime("%Y-%m-%d", now)
+            date_str = datetime.now().strftime("%Y-%m-%d")
             return '2', (date_str + txt_content)
         # 匹配格式08-21 8-21, 当做月和日处理, 在前面拼接年份
         elif re.match(r'(\d{1,2}[-])+\d{1,2}', txt_content):
@@ -216,8 +214,16 @@ def analysis_operation(txt_content):
         else:
             return '0', txt_content
 
+    # 纯数字长度 < 8 位, 补全为时间格式, 按照字符串转时间戳处理
+    txt_len = len(txt_content)
+    if txt_len <= 8:
+        # 当前时间 到 日, 截取之后和参数拼起来
+        today_str = datetime.now().strftime('%Y%m%d')
+        merge = today_str[:len(today_str) - txt_len] + txt_content
+        return '2', merge
+
     # 纯数字字符, 长度超过 14 位无意义, 否则按照时间戳处理
-    if len(txt_content) <= 14:
+    if txt_len <= 14:
         return '1', txt_content
 
     return '0', txt_content
