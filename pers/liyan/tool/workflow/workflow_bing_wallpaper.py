@@ -1,4 +1,5 @@
 import getopt
+import json
 import os
 import sys
 from datetime import datetime
@@ -37,7 +38,7 @@ def download_wallpaper(dir_path, date_str):
     # 如果文件存在, 不进行下载, return
     file_list = os.listdir(dir_path)
     for file_name in file_list:
-        if date_suffix in file_name and not file_name.endswith(".copyright"):
+        if date_suffix in file_name and not file_name.endswith(".json"):
             wf.logger.info('wallpaper of %s already exist' % file_name)
             return os.path.join(dir_path, file_name)
 
@@ -72,11 +73,11 @@ def download_wallpaper(dir_path, date_str):
         attach.write(image_response.content)
     wf.logger.info('save download image finish %s' % image_file_path)
 
-    # 保存 copyright
-    copyright_file_path = os.path.join(dir_path, '{0}_{1}{2}'.format(title, date_suffix, '.copyright'))
-    with open(copyright_file_path, "w") as copyright_file:
-        copyright_file.write(image_info['copyright'])
-    wf.logger.info('save copyright finish %s' % copyright_file_path)
+    # 保存 完整的信息
+    info_file_path = os.path.join(dir_path, '{0}_{1}{2}'.format(title, date_suffix, '.json'))
+    with open(info_file_path, "w") as info_file:
+        info_file.write(json.dumps(image_info, indent=4))
+    wf.logger.info('save info finish %s' % info_file_path)
 
     return image_file_path
 
