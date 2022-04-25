@@ -20,10 +20,13 @@ def convert_json_to_csv(input_json_path, output_csv_path):
             if index == 0:
                 header = data.keys()
                 csv_writer.writerow(header)
-            
+
             csv_writer.writerow(data.values())
 
 
 if __name__ == '__main__':
-    args = parser.parse_args()
-    convert_json_to_csv(args.input, args.output)
+    try:
+        args = parser.parse_args()
+        convert_json_to_csv(args.input, args.output)
+    except Exception as e:
+        print(str(e), end='')

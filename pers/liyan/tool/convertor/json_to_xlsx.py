@@ -26,5 +26,9 @@ def convert_json_to_xlsx(input_json_path, output_xlsx_path):
 
 
 if __name__ == '__main__':
-    args = parser.parse_args()
-    convert_json_to_xlsx(args.input, args.output)
+    try:
+        args = parser.parse_args()
+        convert_json_to_xlsx(args.input, args.output)
+        print('ok', end='')
+    except Exception as e:
+        print(str(e), end='')
