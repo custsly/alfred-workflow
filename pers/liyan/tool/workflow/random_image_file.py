@@ -16,4 +16,4 @@ if __name__ == '__main__':
     dir_path = sys.argv[1]
     dir_file_list = os.listdir(dir_path)
     image_file_list = list(filter(image_file_filter, dir_file_list))
-    print(os.path.abspath(random.choice(image_file_list)), end='')
+    print(os.path.join(dir_path, random.choice(image_file_list)), end='')
