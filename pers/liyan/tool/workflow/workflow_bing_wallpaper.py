@@ -76,7 +76,7 @@ def download_wallpaper(dir_path, date_str):
     # 保存 完整的信息
     info_file_path = os.path.join(dir_path, '{0}_{1}{2}'.format(title, date_suffix, '.json'))
     with open(info_file_path, "w") as info_file:
-        info_file.write(json.dumps(image_info, indent=4))
+        info_file.write(json.dumps(image_info, indent=4, ensure_ascii=False))
     wf.logger.info('save info finish %s' % info_file_path)
 
     return image_file_path
