@@ -19,7 +19,7 @@ def flow(args):
 
     # 读取剪贴板内容
     txt = opts_dict.get('-c')
-    txt = workflow_util.remove_blank_exclude_newline(txt)
+    txt = workflow_util.reformat_lines(txt)
     txt_list = txt.split('\n')
 
     # workflow

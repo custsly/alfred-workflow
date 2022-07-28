@@ -45,6 +45,19 @@ def remove_blank_exclude_newline(content):
         .strip()
 
 
+def reformat_lines(content):
+    """
+    移除 \t 保留 \n
+    :param content: 字符串
+    :return: 移除后的内容
+    """
+    if content is None:
+        return ''
+    return content.replace('\t', '') \
+        .replace('\r', '') \
+        .strip()
+
+
 def remove_blank(content):
     """
     移除空白, \t 空格, \n
