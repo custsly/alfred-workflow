@@ -39,18 +39,24 @@ def flow(args):
     else:
         # 一行的列数
         column_count = len(row_list[1])
-        # 选中的行的 index
-        selected_column_idx = column_count - len(row_list[0])
+        # 选中的列范围(包含)
+        start_column_index = column_count - len(row_list[0])
+        end_column_index = len(row_list[-1]) - 1
+
         for i, row in enumerate(row_list):
             # 第1行取第1列
             if i == 0:
-                column_value_list.append(row[0])
+                # 列数过少不处理
+                if len(row) <= end_column_index - start_column_index:
+                    continue
+                column_value_list.append(
+                    '\t'.join(row[: end_column_index - start_column_index + 1]))
             # 列数过少, 跳过
-            elif len(row) <= selected_column_idx:
+            elif len(row) <= end_column_index:
                 continue
             # 按照索引获取
             else:
-                column_value_list.append(row[selected_column_idx])
+                column_value_list.append('\t'.join(row[start_column_index: end_column_index + 1]))
 
     # workflow
     wf = Workflow3()
