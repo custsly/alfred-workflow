@@ -119,6 +119,7 @@ def add_duration_to_workflow(func, date_time, workflow, duration_name):
     start_of_duration, duration_start_ms, end_of_duration, duration_end_ms = func(date_time)
     duration_total = '%s, %s' % (duration_start_ms, duration_end_ms)
     duration_total1 = '%s %s' % (duration_start_ms, duration_end_ms)
+    duration_total_between = 'between %s and %s' % (duration_start_ms, duration_end_ms)
 
     ms_of_duration_item = workflow_util.add_wf_item(workflow, title='ms timestamp of %s' % duration_name,
                                                     subtitle='%s %s (start of %s)'
@@ -132,6 +133,8 @@ def add_duration_to_workflow(func, date_time, workflow, duration_name):
                                                     subtitle=duration_total,
                                                     arg=duration_total)
     duration_total_item.add_modifier('alt', subtitle=duration_total1, arg=duration_total1, valid=True)
+    # between and
+    duration_total_item.add_modifier('cmd', subtitle=duration_total_between, arg=duration_total_between, valid=True)
 
 
 def parse_datetime_with_timestamp_s(timestamp):
