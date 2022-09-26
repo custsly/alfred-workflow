@@ -11,8 +11,8 @@ from workflow import Workflow3
 # 日期格式
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-# 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳, 3 多个时间戳批量转换
-OPERATION_TUP = ('0', '1', '2', '3')
+# 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳, 3 多个时间戳批量转换, 4 多个字符串批量转时间戳
+OPERATION_TUP = ('0', '1', '2', '3', '4')
 
 
 def format_time(date_time):
@@ -181,6 +181,16 @@ def parse_datetime_with_ts_ms_batch(timestamps_str):
     return list(map(parse_datetime_with_timestamp_ms, timestamp_list))
 
 
+def parse_ms_timestamp_with_str_batch(datetime_str_lines):
+    """
+    分隔长字符串, 作为时间字符串转换为
+    :param datetime_str_lines: 使用逗号,空格,tab分隔的多个时间戳
+    :return: list
+    """
+    datetime_str_list = datetime_str_lines.split('\n')
+    return list(map(parse_time, datetime_str_list))
+
+
 def analysis_operation(txt_content):
     """
     根据文本内容预测操作类型, 必要的时候处理文本内容
@@ -200,6 +210,9 @@ def analysis_operation(txt_content):
         # 格式类似 1629648000000	1629676800000	1629707400000
         if re.match(r'(\d+[,\t\n ]+)+\d+', txt_content):
             return '3', txt_content
+        # 有超过2个换行, 作为多行时间转时间戳处理
+        elif txt_content.count('\n') > 2:
+            return '4', txt_content
         # 匹配格式 2.32.12 4:12:23 3.12 当做时分秒处理, 在前面拼接年月日
         elif re.match(r'(\d{1,2}[\\.:])+\d{1,2}', txt_content):
             time_list = re.sub(r'\D', ' ', txt_content).split(' ')
@@ -207,7 +220,7 @@ def analysis_operation(txt_content):
             date_str = datetime.now().strftime("%Y-%m-%d")
             return '2', (date_str + txt_content)
         # 匹配格式08-21 8-21, 当做月和日处理, 在前面拼接年份
-        elif re.match(r'(\d{1,2}[-])+\d{1,2}', txt_content):
+        elif re.match(r'(\d{1,2}-)+\d{1,2}', txt_content):
             time_list = re.sub(r'\D', ' ', txt_content).split(' ')
             txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
             return '2', (str(datetime.now().date().year) + txt_content)
@@ -386,6 +399,14 @@ def flow(args):
         workflow_util.add_wf_item(wf, title='parse million second datetime batch lines',
                                   subtitle=date_time_sec_str_lines,
                                   arg=date_time_sec_str_lines)
+    elif operation == '4':
+        # 批量字符串转时间戳
+        date_time_list = parse_ms_timestamp_with_str_batch(txt_content)
+        # 使用换行分割
+        timestamp_ms_lines = '\n'.join(map(lambda dt: str(parse_timestamp_s(dt) * 1000), date_time_list))
+        workflow_util.add_wf_item(wf, title='parse to million second batch',
+                                  subtitle=timestamp_ms_lines,
+                                  arg=timestamp_ms_lines)
 
     wf.send_feedback()
 
