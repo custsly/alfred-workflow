@@ -2,33 +2,34 @@
 import getopt
 import re
 import sys
-import time
-from datetime import datetime
+
+import pendulum
 
 from wf_utils import workflow_util
 from workflow import Workflow3
 
 # 日期格式
-DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+DEFAULT_DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+COMPACT_DATE_TIME_FORMAT = 'YYYYMMDDHHmmss'
 
 # 操作类型, 0 当前时间, 1 时间戳转字符串, 2 字符串转时间戳, 3 多个时间戳批量转换, 4 多个字符串批量转时间戳
 OPERATION_TUP = ('0', '1', '2', '3', '4')
 
 
-def format_time(date_time):
+def format_time(pendulum_datetime):
     """
-    按照 %Y-%m-%d %H:%M:%S 格式格式化时间
-    :param date_time: 时间对象
+    按照 YYYY-MM-DD HH:mm:ss 格式格式化时间
+    :param pendulum_datetime: pendulum 时间对象
     :return: 字符串
     """
 
-    if not date_time:
+    if not pendulum_datetime:
         return None
 
-    return time.strftime(DATE_TIME_FORMAT, date_time)
+    return pendulum_datetime.format(DEFAULT_DATE_TIME_FORMAT)
 
 
-def parse_time(datetime_str):
+def parse_pendulum_time(datetime_str):
     """
     字符串转换为time对象
     兼容类似 yyyy-MM-dd HH:mm:ss 的格式
@@ -47,64 +48,76 @@ def parse_time(datetime_str):
         return None
 
     try:
-        return time.strptime(datetime_str, '%Y%m%d%H%M%S')
+        return pendulum.from_format(datetime_str, COMPACT_DATE_TIME_FORMAT, tz='Asia/Shanghai')
     except ValueError as e:
         return None
 
 
-def parse_timestamp_s(date_time):
+def parse_timestamp_s(pendulum_datetime):
     """
     time对象转换为 时间戳
-    :param date_time: 时间对象
+    :param pendulum_datetime: 时间对象
     :return: 返回 s 级时间戳
     """
 
-    return int(time.mktime(date_time))
+    return pendulum_datetime.int_timestamp
 
 
-def duration_of_hour(date_time):
+def parse_timestamp_ms(pendulum_datetime):
+    """
+    time对象转换为 ms 时间戳
+    :param pendulum_datetime: 时间对象
+    :return: 返回 ms 级时间戳
+    """
+
+    return int(pendulum_datetime.timestamp() * 1000)
+
+
+def duration_of_hour(pendulum_datetime):
     """
     当前小时开始的时间戳, ms 值 000, 999
-    :param date_time: 时间
+    :param pendulum_datetime: 时间
     :return: 开始时间, 开始时间戳 后三位ms 000, 结束时间, 结束时间戳 后三位 999
     """
-    hour_str = time.strftime("%Y-%m-%d %H", date_time)
-    start_of_hour_str = hour_str + ':00:00'
-    end_of_hour_str = hour_str + ':59:59'
-    start_of_hour = time.strptime(start_of_hour_str, DATE_TIME_FORMAT)
+    start_of_hour = pendulum_datetime.start_of('hour')
+    end_of_hour = pendulum_datetime.end_of('hour')
+
+    start_of_hour_str = format_time(start_of_hour)
+    end_of_hour_str = format_time(end_of_hour)
 
     return start_of_hour_str, parse_timestamp_s(start_of_hour) * 1000, end_of_hour_str, parse_timestamp_s(
-        start_of_hour) * 1000 + 3600000 - 1
+        end_of_hour) * 1000 + 999
 
 
-def duration_of_minute(date_time):
+def duration_of_minute(pendulum_datetime):
     """
     当前分钟的开始结束时间戳, ms
-    :param date_time: 时间
+    :param pendulum_datetime: 时间
     :return:  开始时间, 开始时间戳, 结束时间, 结束时间戳
     """
-    minute_str = time.strftime("%Y-%m-%d %H:%M", date_time)
-    start_of_minute_str = minute_str + ':00'
-    end_of_minute_str = minute_str + ':59'
-    start_of_minute = time.strptime(start_of_minute_str, DATE_TIME_FORMAT)
+    start_of_minute = pendulum_datetime.start_of('minute')
+    end_of_minute = pendulum_datetime.end_of('minute')
+
+    start_of_minute_str = format_time(start_of_minute)
+    end_of_minute_str = format_time(end_of_minute)
 
     return start_of_minute_str, parse_timestamp_s(start_of_minute) * 1000, end_of_minute_str, parse_timestamp_s(
-        start_of_minute) * 1000 + 60000 - 1
+        end_of_minute) * 1000 + 999
 
 
-def duration_of_day(date_time):
+def duration_of_day(pendulum_datetime):
     """
     当前日期开始的时间戳, ms 值 000, 999
-    :param date_time: 时间
+    :param pendulum_datetime: 时间
     :return: 开始时间, 开始时间戳 后三位ms 000, 结束时间, 结束时间戳 后三位 999
     """
-    day_str = time.strftime("%Y-%m-%d", date_time)
-    start_of_day_str = day_str + ' 00:00:00'
-    end_of_day_str = day_str + ' 23:59:59'
-    start_of_day = time.strptime(start_of_day_str, DATE_TIME_FORMAT)
+    start_of_day = pendulum_datetime.start_of('day')
+    end_of_day = pendulum_datetime.end_of('day')
+    start_of_day_str = format_time(start_of_day)
+    end_of_day_str = format_time(end_of_day)
 
     return start_of_day_str, parse_timestamp_s(start_of_day) * 1000, end_of_day_str, parse_timestamp_s(
-        start_of_day) * 1000 + 86400000 - 1
+        end_of_day) * 1000 + 999
 
 
 def add_duration_to_workflow(func, date_time, workflow, duration_name):
@@ -149,8 +162,10 @@ def parse_datetime_with_timestamp_s(timestamp):
     except ValueError as e:
         # print('parse float error str: %s, error: %s' % (timestamp, e))
         return None
-
-    return time.localtime(timestamp)
+    # 超过 9999 年不处理, 会报错
+    if timestamp > 253402232399:
+        return None
+    return pendulum.from_timestamp(timestamp, tz='Asia/Shanghai')
 
 
 def parse_datetime_with_timestamp_ms(timestamp):
@@ -166,9 +181,8 @@ def parse_datetime_with_timestamp_ms(timestamp):
     except ValueError as e:
         # print('parse float error str: %s, error: %s' % (timestamp, e))
         return None
-
-    timestamp = float(timestamp) / 1000.0
-    return time.localtime(timestamp)
+    timestamp = int(timestamp / 1000)
+    return pendulum.from_timestamp(timestamp, tz='Asia/Shanghai')
 
 
 def parse_datetime_with_ts_ms_batch(timestamps_str):
@@ -188,7 +202,7 @@ def parse_ms_timestamp_with_str_batch(datetime_str_lines):
     :return: list
     """
     datetime_str_list = datetime_str_lines.split('\n')
-    return list(map(parse_time, datetime_str_list))
+    return list(map(parse_pendulum_time, datetime_str_list))
 
 
 def analysis_operation(txt_content):
@@ -217,13 +231,13 @@ def analysis_operation(txt_content):
         elif re.match(r'(\d{1,2}[\\.:])+\d{1,2}', txt_content):
             time_list = re.sub(r'\D', ' ', txt_content).split(' ')
             txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
-            date_str = datetime.now().strftime("%Y-%m-%d")
+            date_str = pendulum.now().format("YYYY-MM-DD")
             return '2', (date_str + txt_content)
         # 匹配格式08-21 8-21, 当做月和日处理, 在前面拼接年份
         elif re.match(r'(\d{1,2}-)+\d{1,2}', txt_content):
             time_list = re.sub(r'\D', ' ', txt_content).split(' ')
             txt_content = ''.join(list(map(lambda t: t.rjust(2, '0'), time_list)))
-            return '2', (str(datetime.now().date().year) + txt_content)
+            return '2', (str(pendulum.now().year) + txt_content)
         elif len(re.sub(r'\D', '', txt_content)) >= 8:
             # 非数字替换成空白字符, 长度 >= 8 作为字符串转时间戳处理
             return '2', txt_content
@@ -234,7 +248,7 @@ def analysis_operation(txt_content):
     txt_len = len(txt_content)
     if txt_len <= 8:
         # 当前时间 到 日, 截取之后和参数拼起来
-        today_str = datetime.now().strftime('%Y%m%d')
+        today_str = pendulum.now().format('YYYYMMDD')
         merge = today_str[:len(today_str) - txt_len] + txt_content
         return '2', merge
 
@@ -284,16 +298,15 @@ def flow(args):
     # workflow
     wf = Workflow3()
     if operation == '0':
-        timestamp = time.time()
-        timestamp_s = int(timestamp)
-        timestamp_ms = int(timestamp * 1000)
-        now = time.localtime(timestamp)
+        now = pendulum.now(tz='Asia/Shanghai')
+        timestamp_s = parse_timestamp_s(now)
+        timestamp_ms = parse_timestamp_ms(now)
 
-        date_str_1 = time.strftime("%Y-%m-%d", now)
-        date_str_2 = time.strftime("%Y%m%d", now)
+        date_str_1 = now.format("YYYY-MM-DD")
+        date_str_2 = now.format("YYYYMMDD")
 
-        current_second_1 = time.strftime(DATE_TIME_FORMAT, now)
-        current_second_2 = time.strftime("%Y%m%d%H%M%S", now)
+        current_second_1 = now.format(DEFAULT_DATE_TIME_FORMAT)
+        current_second_2 = now.format(COMPACT_DATE_TIME_FORMAT)
 
         # yyyy-MM-dd 格式
         current_date_item = workflow_util.add_wf_item(wf, title='current date', subtitle=date_str_1,
@@ -352,7 +365,7 @@ def flow(args):
                                   valid=(time_from_s is not None))
     elif operation == '2':
         # 时间转换为标准格式
-        date_time = parse_time(txt_content)
+        date_time = parse_pendulum_time(txt_content)
 
         if not date_time:
             workflow_util.add_wf_item(wf, title='Invalid datetime str "%s"' % txt_content,
@@ -390,12 +403,12 @@ def flow(args):
         # 批量将时间戳转换为字符串
         date_time_list = parse_datetime_with_ts_ms_batch(txt_content)
         # 使用逗号分隔
-        date_time_sec_str = ', '.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
+        date_time_sec_str = ', '.join(map(lambda dt: dt.format(DEFAULT_DATE_TIME_FORMAT), date_time_list))
         workflow_util.add_wf_item(wf, title='parse million second datetime batch',
                                   subtitle=date_time_sec_str,
                                   arg=date_time_sec_str)
         # 使用换行分割
-        date_time_sec_str_lines = '\n'.join(map(lambda dt: time.strftime(DATE_TIME_FORMAT, dt), date_time_list))
+        date_time_sec_str_lines = '\n'.join(map(lambda dt: dt.format(DEFAULT_DATE_TIME_FORMAT), date_time_list))
         workflow_util.add_wf_item(wf, title='parse million second datetime batch lines',
                                   subtitle=date_time_sec_str_lines,
                                   arg=date_time_sec_str_lines)
