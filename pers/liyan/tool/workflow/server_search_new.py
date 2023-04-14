@@ -36,7 +36,8 @@ class WebServer(object):
 
 
 def search_servers(search_keyword, wf):
-    csv_file_path = os.path.join(os.getcwd(), 'servers.csv')
+    os_cwd = os.getcwd()
+    csv_file_path = os.path.join(os_cwd, 'servers.csv')
 
     web_server_list = []
 
@@ -46,26 +47,25 @@ def search_servers(search_keyword, wf):
         server_csv_list = list(reader)
         for server_attr in server_csv_list[1:]:
 
-            if len(server_attr) < 3:
+            if len(server_attr) < 4:
                 continue
             # wf.logger.info('server search_servers start cut')
             # cut_search_keyword = ' '.join(jieba.cut(search_keyword))
             # wf.logger.info('server search_servers cut finish...')
 
-            # 如果包含, 匹配度设置为 100
+            # 去重子集匹配
+            token_set_ratio = fuzz.partial_token_set_ratio(search_keyword, ' '.join(server_attr[1:]))
+            # 如果包含, 匹配度设置 +100
             if search_keyword in server_attr[2:]:
-                token_set_ratio = 100
-            else:
-                # 去重子集匹配
-                token_set_ratio = fuzz.partial_token_set_ratio(search_keyword, ' '.join(server_attr))
+                token_set_ratio += 100
 
-                wf.logger.info('server: %s, token_set_ratio: %s', server_attr, token_set_ratio)
+            wf.logger.info('server: %s, token_set_ratio: %s', server_attr, token_set_ratio)
 
             if token_set_ratio > 0:
-                icon_name = server_attr[1] if server_attr[1] else 'default.ico'
-                icon_path = os.path.join(os.getcwd(), 'icons', icon_name)
+                icon_name = server_attr[0] if server_attr[0] else 'default.ico'
+                icon_path = os.path.join(os_cwd, 'icons', icon_name)
                 web_server_list.append(
-                    WebServer(server_attr[0], server_attr[2], server_attr[3], token_set_ratio, icon_path))
+                    WebServer(server_attr[1], server_attr[2], server_attr[3], token_set_ratio, icon_path))
 
         web_server_list.sort(key=lambda x: x.ratio, reverse=True)
 
