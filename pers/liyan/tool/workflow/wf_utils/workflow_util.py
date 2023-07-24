@@ -31,6 +31,15 @@ def remove_carriage_return(content):
     return content.replace('\r', '')
 
 
+def remove_return(content):
+    """
+    替换 \r\n 为 \n
+    :param content: 字符串
+    :return: 替换后得到的字符串
+    """
+    return content.replace('\r\n', '\n')
+
+
 def remove_blank_exclude_newline(content):
     """
     移除空白, \t 空格, 保留 \n

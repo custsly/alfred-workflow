@@ -6,15 +6,6 @@ from wf_utils import workflow_util
 from workflow import Workflow3
 
 
-def remove_return(content):
-    """
-    替换 \r\n 为 \n
-    :param content: 字符串
-    :return: 替换后得到的字符串
-    """
-    return content.replace('\r\n', '\n')
-
-
 def flow(args):
     """
     workflow主要方法, 替换剪贴板内容 \r\n 为 \n
@@ -24,7 +15,7 @@ def flow(args):
     # 参数
     opts, _ = getopt.getopt(args, "c:")
     opts_dict = dict(opts)
-    txt = remove_return(opts_dict.get('-c'))
+    txt = workflow_util.remove_return(opts_dict.get('-c'))
 
     # workflow
     wf = Workflow3()
