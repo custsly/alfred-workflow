@@ -1,6 +1,7 @@
 import getopt
 import json
 import os
+import re
 import sys
 from datetime import datetime
 
@@ -10,6 +11,16 @@ from furl import furl
 from workflow import Workflow3
 
 wf = Workflow3()
+
+
+def sanitize_filename(filename):
+    # 非法字符列表
+    illegal_chars = r'[<>:"/\\|?*\x00-\x1f\x80-\x9f]'
+
+    # 替换非法字符为下划线
+    sanitized_filename = re.sub(illegal_chars, '_', filename)
+
+    return sanitized_filename
 
 
 def download_wallpaper(dir_path, date_str):
@@ -51,7 +62,7 @@ def download_wallpaper(dir_path, date_str):
 
     wf.logger.info('image info %s' % image_info)
     # 标题
-    title = image_info['title']
+    title = sanitize_filename(image_info['title'])
     image_url = 'https://cn.bing.com' + image_info['url'].replace('1920x1080', 'UHD')
     wf.logger.info('title %s, image url %s' % (title, image_url))
 
