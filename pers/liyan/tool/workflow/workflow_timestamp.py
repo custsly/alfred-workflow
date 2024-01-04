@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 
 from wf_utils import workflow_util
-from workflow import Workflow3
+from ualfred import Workflow3
 
 # 日期格式
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"

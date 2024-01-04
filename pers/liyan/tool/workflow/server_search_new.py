@@ -6,7 +6,7 @@ import sys
 
 from fuzzywuzzy import fuzz
 from workflow import ICON_WEB
-from workflow import Workflow3
+from ualfred import Workflow3
 
 
 class WebServer(object):
@@ -69,7 +69,7 @@ def search_servers(search_keyword, wf):
 
         web_server_list.sort(key=lambda x: x.ratio, reverse=True)
 
-    return web_server_list if len(web_server_list) > 0 else None
+    return web_server_list[:10] if len(web_server_list) > 0 else None
 
 
 def flow(search_keyword):

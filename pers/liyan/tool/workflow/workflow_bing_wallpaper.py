@@ -8,7 +8,7 @@ from datetime import datetime
 import requests
 from furl import furl
 
-from workflow import Workflow3
+from ualfred import Workflow3
 
 wf = Workflow3()
 

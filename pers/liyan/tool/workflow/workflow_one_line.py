@@ -4,7 +4,7 @@ import sys
 import re
 
 from wf_utils import workflow_util
-from workflow import Workflow3
+from ualfred import Workflow3
 
 
 def remove_return(content):

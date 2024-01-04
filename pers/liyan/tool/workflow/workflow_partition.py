@@ -3,7 +3,7 @@ import getopt
 import sys
 
 from wf_utils import workflow_util
-from workflow import Workflow3
+from ualfred import Workflow3
 
 
 def partition_by(init_list, partition_size):

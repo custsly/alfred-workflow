@@ -3,7 +3,7 @@
 import pyperclip
 
 from wf_utils import workflow_util
-from workflow import Workflow3
+from ualfred import Workflow3
 
 VARCHAR_EXCLUDE_CELL = ('now()',)
 

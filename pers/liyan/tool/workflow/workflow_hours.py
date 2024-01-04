@@ -5,7 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from wf_utils import workflow_util
-from workflow import Workflow3
+from ualfred import Workflow3
 
 
 def parse_date_time(datetime_str):
