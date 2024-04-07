@@ -4,8 +4,9 @@ import sys
 from datetime import datetime
 from datetime import timedelta
 
-from wf_utils import workflow_util
 from ualfred import Workflow3
+
+from wf_utils import workflow_util
 
 
 def parse_date_time(datetime_str):
@@ -67,16 +68,16 @@ def flow(args):
         valid = False
     else:
         arg_arr = args[1].split(' ')
-        wf.logger.info('workflow_minutes arg_arr %s' % arg_arr)
+        wf.logger.info(f'workflow_minutes arg_arr {arg_arr}')
         start_time_with_day, start_time = parse_date_time(arg_arr[0])
         end_time_with_day, end_time = parse_date_time(arg_arr[1]) if len(
             arg_arr) > 1 else (False, datetime.now().replace(second=0, microsecond=0))
         if not start_time or not end_time:
             valid = False
-        wf.logger.info('start_time %s, end_time %s' % (start_time, end_time))
+        wf.logger.info(f'start_time {start_time}, end_time {end_time}')
 
     if not valid:
-        workflow_util.add_wf_item(wf, title='illegal args %s' % args[1:])
+        workflow_util.add_wf_item(wf, title=f'illegal args {args[1:]}')
     else:
         # 开始时间和结束时间都没有具体的日期, 调整开始和结束时间
         if not start_time_with_day and not end_time_with_day:
@@ -91,13 +92,14 @@ def flow(args):
         start_time_str = start_time.strftime('%Y-%m-%d %H:%M')
         end_time_str = end_time.strftime('%Y-%m-%d %H:%M')
 
-        workflow_util.add_wf_item(wf, title='%s hours' % duration_hours, subtitle='hours between (%s, %s]' % (
-            start_time_str, end_time_str), copytext=duration_hours, valid=True,
+        workflow_util.add_wf_item(wf, title=f'{duration_hours} hours',
+                                  subtitle=f'hours between ({start_time_str}, {end_time_str}]', copytext=duration_hours,
+                                  valid=True,
                                   arg=duration_hours)
 
-        workflow_util.add_wf_item(wf, title='%s minutes' % duration_minutes,
-                                  subtitle='minutes between [%s, %s]' % (
-                                      start_time_str, end_time_str), copytext=duration_minutes, valid=True,
+        workflow_util.add_wf_item(wf, title=f'{duration_minutes} minutes',
+                                  subtitle=f'minutes between [{start_time_str}, {end_time_str}]',
+                                  copytext=duration_minutes, valid=True,
                                   arg=duration_minutes)
 
     wf.send_feedback()

@@ -28,7 +28,7 @@ def flow(args):
     wf = Workflow3()
 
     # split 得到的结果
-    workflow_util.add_wf_item(wf, title='date format result', subtitle="%s" % repr(txt),
+    workflow_util.add_wf_item(wf, title='date format result', subtitle=repr(txt),
                               arg=txt)
 
     wf.send_feedback()

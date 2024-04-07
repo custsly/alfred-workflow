@@ -3,8 +3,9 @@ import re
 import sys
 from datetime import datetime
 
-from wf_utils import workflow_util
 from ualfred import Workflow3
+
+from wf_utils import workflow_util
 
 
 def parse_date(datetime_str):
@@ -54,26 +55,29 @@ def flow(args):
         valid = False
     else:
         arg_arr = workflow_util.strip(re.sub(r'\s+', ' ', args[1])).split(' ')
-        wf.logger.info('workflow_days arg_arr %s' % arg_arr)
+        wf.logger.info(f'workflow_days arg_arr {arg_arr}')
         start_date = parse_date(arg_arr[0])
         end_date = parse_date(arg_arr[1]) if len(arg_arr) > 1 else datetime.now().date()
         if not start_date or not end_date:
             valid = False
 
     if not valid:
-        workflow_util.add_wf_item(wf, title='illegal args %s' % args[1:])
+        workflow_util.add_wf_item(wf, title=f'illegal args {args[1:]}')
     else:
         duration_days = abs((start_date - end_date).days)
         start_date_str = start_date.strftime('%Y-%m-%d')
         end_date_str = end_date.strftime('%Y-%m-%d')
 
-        workflow_util.add_wf_item(wf, title='%s days' % duration_days, subtitle='days between (%s, %s]' % (
-            start_date_str, end_date_str), copytext=duration_days, valid=True,
+        workflow_util.add_wf_item(wf, title=f'{duration_days} days',
+                                  subtitle=f'days between ({start_date_str}, {end_date_str}]',
+                                  copytext=duration_days,
+                                  valid=True,
                                   arg=duration_days)
 
         include_duration_days = duration_days + 1
-        workflow_util.add_wf_item(wf, title='%s days' % include_duration_days, subtitle='days between [%s, %s]' % (
-            start_date_str, end_date_str), copytext=include_duration_days, valid=True,
+        workflow_util.add_wf_item(wf, title=f'{include_duration_days} days',
+                                  subtitle=f'days between [{start_date_str}, {end_date_str}]',
+                                  copytext=include_duration_days, valid=True,
                                   arg=include_duration_days)
 
     wf.send_feedback()

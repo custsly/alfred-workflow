@@ -2,10 +2,9 @@
 import getopt
 import sys
 
-import pyperclip
+from ualfred import Workflow3
 
 from wf_utils import workflow_util
-from ualfred import Workflow3
 
 
 def transpose_2d(data):

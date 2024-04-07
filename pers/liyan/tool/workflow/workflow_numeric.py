@@ -3,8 +3,9 @@ import getopt
 import re
 import sys
 
-from wf_utils import workflow_util
 from ualfred import Workflow3
+
+from wf_utils import workflow_util
 
 
 def remove_non_digits(string):
@@ -26,7 +27,7 @@ def flow(args):
     # workflow
     wf = Workflow3()
 
-    workflow_util.add_wf_item(wf, title=repr(result_txt), subtitle=r'origin str %s' % repr(origin_txt), arg=result_txt,
+    workflow_util.add_wf_item(wf, title=repr(result_txt), subtitle=rf'origin str {repr(origin_txt)}', arg=result_txt,
                               valid=True)
 
     wf.send_feedback()
