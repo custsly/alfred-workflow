@@ -1,8 +1,9 @@
 # encoding:utf-8
+import glob
 import os
 import sys
-import glob
 import time
+
 import openpyxl
 import pandas as pd
 
@@ -132,4 +133,4 @@ if __name__ == '__main__':
     xlsx_files = list_all_xlsx_files()
     # 合并文件
     merge_xlsx_files(xlsx_files)
-    # python main.py "C:\Users\ShiLY\Desktop"
+    # python excel_merge.py "C:\Users\ShiLY\Desktop"
