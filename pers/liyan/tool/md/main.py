@@ -1,7 +1,7 @@
 # encoding:utf-8
+import base64
 import os
 import sys
-import base64
 
 
 def image_to_base64(image_path):
