@@ -5,7 +5,6 @@ import os
 import sys
 
 from fuzzywuzzy import fuzz
-from workflow import ICON_WEB
 from ualfred import Workflow3
 
 
@@ -54,7 +53,7 @@ def search_servers(search_keyword, wf):
             # wf.logger.info('server search_servers cut finish...')
 
             # 去重子集匹配
-            token_set_ratio = fuzz.partial_token_set_ratio(search_keyword, ' '.join(server_attr[1:]))
+            token_set_ratio = fuzz.token_set_ratio(search_keyword, ' '.join(server_attr[1:]))
             # 如果包含, 匹配度设置 +100
             if search_keyword in server_attr[2:]:
                 token_set_ratio += 100
@@ -78,8 +77,8 @@ def flow(search_keyword):
     wf.logger.info('server search_keyword %s', search_keyword)
 
     # 使用缓存, 1min
-    cache_key = 'server_%s' % hashlib.md5(search_keyword.encode('utf-8')).hexdigest()
-    server_list = wf.cached_data(cache_key, lambda: search_servers(search_keyword, wf), max_age=60)
+    cache_key = f"server_{hashlib.md5(search_keyword.encode('utf-8')).hexdigest()}"
+    server_list = wf.cached_data(cache_key, lambda: search_servers(search_keyword, wf), max_age=1)
 
     for item in server_list:
         wf.logger.info('add server %s', item)
