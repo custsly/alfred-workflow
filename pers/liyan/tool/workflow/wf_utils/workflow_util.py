@@ -35,7 +35,7 @@ def remove_carriage_return(content):
     return '' if content is None else content.replace('\r', '')
 
 
-def remove_return(content):
+def normalize_newlines(content):
     """
     替换 \r\n 为 \n
     :param content: 字符串
@@ -44,7 +44,7 @@ def remove_return(content):
     return content.replace('\r\n', '\n')
 
 
-def remove_blank_exclude_newline(content):
+def remove_whitespace_except_newlines(content):
     """
     移除空白, \t 空格, 保留 \n
     :param content: 字符串
@@ -96,7 +96,7 @@ def wrap_with_symbol(txt_list, symbol="'"):
     return [f"{symbol}{txt}{symbol}" for txt in txt_list]
 
 
-def un_wrap_brackets(text):
+def unwrap_brackets(text):
     """
     移除两端的括号
     :param text: 字符串

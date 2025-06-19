@@ -25,7 +25,7 @@ def flow(args):
     # 移除空白字符
     txt = workflow_util.remove_blank(txt)
     # 移除两端的括号
-    txt = workflow_util.un_wrap_brackets(txt)
+    txt = workflow_util.unwrap_brackets(txt)
 
     txt_list = txt.split(splitter)
 

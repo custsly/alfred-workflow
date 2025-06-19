@@ -18,7 +18,7 @@ def flow(args):
 
     # 读取剪贴板内容
     txt = opts_dict.get('-c')
-    txt = workflow_util.remove_blank_exclude_newline(txt)
+    txt = workflow_util.remove_whitespace_except_newlines(txt)
     txt_list = txt.split('\n')
     # 按照 / split, 长度填充为两位
     txt_list = map(lambda row: '-'.join(map(lambda n: n.rjust(2, '0'), row.split(r'/'))), txt_list)

@@ -78,7 +78,7 @@ def flow(search_keyword):
 
     # 使用缓存, 1min
     cache_key = f"server_{hashlib.md5(search_keyword.encode('utf-8')).hexdigest()}"
-    server_list = wf.cached_data(cache_key, lambda: search_servers(search_keyword, wf), max_age=1)
+    server_list = wf.cached_data(cache_key, lambda: search_servers(search_keyword, wf), max_age=60)
 
     for item in server_list:
         wf.logger.info('add server %s', item)

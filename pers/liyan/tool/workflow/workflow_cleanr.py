@@ -15,7 +15,7 @@ def flow(args):
     # 参数
     opts, _ = getopt.getopt(args, "c:")
     opts_dict = dict(opts)
-    txt = workflow_util.remove_return(opts_dict.get('-c'))
+    txt = workflow_util.normalize_newlines(opts_dict.get('-c'))
 
     # workflow
     wf = Workflow3()

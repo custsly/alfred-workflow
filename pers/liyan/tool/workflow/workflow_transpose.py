@@ -30,7 +30,7 @@ def flow(args):
     opts_dict = dict(opts)
 
     # 读取剪贴板内容
-    txt = workflow_util.remove_return(opts_dict.get('-c'))
+    txt = workflow_util.normalize_newlines(opts_dict.get('-c'))
 
     # 操作类型, r列转行, c行转列, 默认列转行
     operation = opts_dict.get('-o') if opts_dict.get('-o') else analysis_operation(opts_dict.get('-c'))

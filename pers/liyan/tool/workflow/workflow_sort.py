@@ -38,7 +38,7 @@ def flow(args, clip_content):
 
     # 读取剪贴板内容
     txt = clip_content
-    txt = workflow_util.remove_blank_exclude_newline(txt)
+    txt = workflow_util.remove_whitespace_except_newlines(txt)
     txt_list = txt.split('\n')
 
     param = analysis_operation(txt_list, param)
