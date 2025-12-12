@@ -4,7 +4,6 @@ import hashlib
 import os
 import sys
 
-from fuzzywuzzy import fuzz
 from ualfred import Workflow3
 
 
@@ -35,6 +34,7 @@ class WebServer(object):
 
 
 def search_servers(search_keyword, wf):
+    fuzz = __import__('fuzzywuzzy.fuzz', fromlist=['fuzz'])
     os_cwd = os.getcwd()
     csv_file_path = os.path.join(os_cwd, 'servers.csv')
 
